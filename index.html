@@ -198,9 +198,14 @@
   .field-row input[type="date"] { flex: 1.2; color-scheme: dark; }
   .field-row input[type="number"] { width: 88px; }
   .field-row input[type="text"] { flex: 1; }
+  .dialog-actions { display: flex; flex-direction: column; gap: 8px; }
   .submit { border: none; border-radius: 4px; padding: 13px; font-size: 14px; letter-spacing: .03em; }
   .submit.peso { background: var(--lime); color: var(--lime-ink); }
   .submit.pierna { background: var(--orange); color: var(--orange-ink); }
+  .delete-btn {
+    border: 1px solid rgba(255,122,69,.4); border-radius: 4px; padding: 11px;
+    font-size: 13px; font-weight: 700; background: transparent; color: var(--orange);
+  }
   .saved-flash { font-size: 12px; font-weight: 700; color: var(--lime); opacity: 0; transition: opacity .3s; }
   .saved-flash.show { opacity: 1; }
 
@@ -244,10 +249,29 @@
   .hist-col.peso .hist-label { color: var(--lime); }
   .hist-col.pierna .hist-label { color: var(--orange); }
   .hist-list { display: flex; flex-direction: column; gap: 7px; }
-  .hist-row { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; padding: 9px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; }
+  .hist-hint { margin: -8px 0 0; font-size: 11.5px; color: var(--text-faint); font-style: italic; }
+  .hist-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12.5px; font-weight: 600; padding: 9px 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+    cursor: pointer; text-align: left; width: 100%; font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hist-row:hover, .hist-row:focus-visible { border-color: var(--text-faint); }
   .hist-row .d { color: var(--text-faint); }
   .hist-row .v { color: var(--text); font-weight: 800; font-variant-numeric: tabular-nums; }
   .hist-empty { font-size: 12px; font-weight: 600; color: var(--text-faint); font-style: italic; padding: 8px 2px; }
+
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px; margin-bottom: 22px; }
+  .chart-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .chart-head .an { font-size: 19px; letter-spacing: .02em; }
+  .chart-legend { display: flex; gap: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--text-muted); }
+  .legend-item i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .legend-item.peso i { background: var(--lime); }
+  .legend-item.pierna i { background: var(--orange); }
+  .chart-wrap { position: relative; height: 220px; }
+  #chart-empty { display: none; }
 
   footer p { margin: 0; font-size: 16px; line-height: 1.35; color: var(--lime); text-align: center; letter-spacing: .01em; }
 </style>
@@ -344,7 +368,7 @@
   <dialog class="modal" id="weight-dialog">
     <form class="panel" id="weight-form">
       <div class="panel-head">
-        <span class="an panel-title">Registra tu peso</span>
+        <span class="an panel-title" id="weight-dialog-title">Registra tu peso</span>
         <button type="button" class="modal-close" id="close-weight" aria-label="Cerrar">✕</button>
       </div>
       <div class="field">
@@ -354,7 +378,10 @@
           <input type="number" id="weight-value" step="0.1" min="30" max="200" placeholder="kg" required>
         </div>
       </div>
-      <button type="submit" class="submit peso" id="weight-submit">Guardar peso</button>
+      <div class="dialog-actions">
+        <button type="submit" class="submit peso" id="weight-submit">Guardar peso</button>
+        <button type="button" class="delete-btn" id="delete-weight" hidden>Eliminar registro</button>
+      </div>
       <span class="saved-flash" id="weight-flash">Guardado ✓</span>
     </form>
   </dialog>
@@ -362,7 +389,7 @@
   <dialog class="modal" id="session-dialog">
     <form class="panel" id="session-form">
       <div class="panel-head">
-        <span class="an panel-title pierna">Registra tu sesión</span>
+        <span class="an panel-title pierna" id="session-dialog-title">Registra tu sesión</span>
         <button type="button" class="modal-close" id="close-session" aria-label="Cerrar">✕</button>
       </div>
       <div class="field">
@@ -372,7 +399,10 @@
           <input type="text" id="session-note" placeholder="Nota (opcional)">
         </div>
       </div>
-      <button type="submit" class="submit pierna" id="session-submit">Registrar sesión</button>
+      <div class="dialog-actions">
+        <button type="submit" class="submit pierna" id="session-submit">Registrar sesión</button>
+        <button type="button" class="delete-btn" id="delete-session" hidden>Eliminar registro</button>
+      </div>
       <span class="saved-flash" id="session-flash">Guardado ✓</span>
     </form>
   </dialog>
@@ -392,8 +422,21 @@
     </div>
   </div>
 
+  <div class="chart-card">
+    <div class="chart-head">
+      <span class="an">Tu evolución</span>
+      <div class="chart-legend">
+        <span class="legend-item peso"><i></i>Peso</span>
+        <span class="legend-item pierna"><i></i>Sesiones</span>
+      </div>
+    </div>
+    <div class="chart-wrap" id="chart-wrap"><canvas id="progress-chart"></canvas></div>
+    <p class="hist-empty" id="chart-empty">Registra tu primer peso o sesión para ver aquí tu evolución.</p>
+  </div>
+
   <div class="historial">
     <span class="an">Historial</span>
+    <p class="hist-hint">Toca un registro para editarlo o eliminarlo.</p>
     <div class="hist-cols">
       <div class="hist-col peso">
         <span class="hist-label">PESO</span>
@@ -409,6 +452,7 @@
   <footer><p>Cada premio es una victoria. Ve a por todas, Raquel.</p></footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script type="module">
   /* ---------------------------------------------------------------
      CONFIGURA AQUÍ TU PROYECTO DE SUPABASE
@@ -444,6 +488,12 @@
 
   function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
 
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
   var todayIso = todayISO();
   document.getElementById('today-label').textContent = 'HOY · ' + formatEs(todayIso).toUpperCase();
   document.getElementById('weight-date').value = todayIso;
@@ -451,6 +501,9 @@
 
   var state = { weights: [], sessions: [] };
   var weightInputSeeded = false;
+  var editingWeightDate = null;
+  var editingSessionId = null;
+  var chartInstance = null;
 
   function weightMilestoneState(current) {
     var reached = [], next = null, locked = [];
@@ -482,6 +535,122 @@
       '<span class="an">' + value + (unit ? ' ' + unit : '') + '</span>' +
       '<span class="premio-tag">' + tag + '</span>' +
       '</div>';
+  }
+
+  function renderChart(weights, sessions) {
+    var chartWrap = document.getElementById('chart-wrap');
+    var canvas = document.getElementById('progress-chart');
+    var empty = document.getElementById('chart-empty');
+    if (typeof Chart === 'undefined') { chartWrap.style.display = 'none'; empty.style.display = 'block'; empty.textContent = 'El gráfico no se ha podido cargar.'; return; }
+
+    var dates = [];
+    var seen = {};
+    weights.concat(sessions).forEach(function (r) { if (!seen[r.fecha]) { seen[r.fecha] = true; dates.push(r.fecha); } });
+    dates.sort();
+
+    if (!dates.length) {
+      chartWrap.style.display = 'none';
+      empty.style.display = 'block';
+      return;
+    }
+    chartWrap.style.display = 'block';
+    empty.style.display = 'none';
+
+    var weightByDate = {};
+    weights.forEach(function (w) { weightByDate[w.fecha] = w.kg; });
+    var sessionCountByDate = {};
+    sessions.forEach(function (s) { sessionCountByDate[s.fecha] = (sessionCountByDate[s.fecha] || 0) + 1; });
+
+    var labels = dates.map(formatEs);
+    var weightSeries = dates.map(function (d) { return d in weightByDate ? weightByDate[d] : null; });
+    var sessionSeries = dates.map(function (d) { return sessionCountByDate[d] || 0; });
+
+    if (chartInstance) {
+      chartInstance.data.labels = labels;
+      chartInstance.data.datasets[0].data = sessionSeries;
+      chartInstance.data.datasets[1].data = weightSeries;
+      chartInstance.update();
+      return;
+    }
+
+    var gridColor = 'rgba(51,54,47,.6)';
+    var textColor = '#93968a';
+    var fontBase = { family: "'Manrope', system-ui, sans-serif", size: 10, weight: '700' };
+
+    chartInstance = new Chart(canvas.getContext('2d'), {
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Sesiones',
+            data: sessionSeries,
+            backgroundColor: 'rgba(255,122,69,.55)',
+            hoverBackgroundColor: 'rgba(255,122,69,.8)',
+            borderRadius: 4,
+            maxBarThickness: 26,
+            yAxisID: 'ySessions',
+            order: 2
+          },
+          {
+            type: 'line',
+            label: 'Peso (kg)',
+            data: weightSeries,
+            borderColor: '#c6ff3a',
+            backgroundColor: 'rgba(198,255,58,.15)',
+            pointBackgroundColor: '#c6ff3a',
+            pointBorderColor: '#181a1e',
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            borderWidth: 3,
+            tension: 0.35,
+            spanGaps: true,
+            fill: true,
+            yAxisID: 'yWeight',
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1a1c20',
+            borderColor: '#33362f',
+            borderWidth: 1,
+            titleColor: '#f4f5ef',
+            bodyColor: '#f4f5ef',
+            titleFont: fontBase,
+            bodyFont: { family: fontBase.family, size: 11 },
+            padding: 10
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: textColor, font: fontBase, maxRotation: 0, autoSkip: true },
+            grid: { color: gridColor }
+          },
+          yWeight: {
+            position: 'left',
+            suggestedMin: WEIGHT_MILESTONES[WEIGHT_MILESTONES.length - 1] - 0.5,
+            suggestedMax: START_WEIGHT + 0.3,
+            ticks: { color: '#c6ff3a', font: fontBase },
+            grid: { color: gridColor },
+            title: { display: true, text: 'kg', color: '#c6ff3a', font: fontBase }
+          },
+          ySessions: {
+            position: 'right',
+            beginAtZero: true,
+            ticks: { color: '#ff7a45', font: fontBase, precision: 0 },
+            grid: { display: false },
+            title: { display: true, text: 'sesiones', color: '#ff7a45', font: fontBase }
+          }
+        }
+      }
+    });
   }
 
   function render() {
@@ -525,7 +694,7 @@
 
     var histPeso = weights.slice().reverse();
     document.getElementById('hist-peso').innerHTML = histPeso.length
-      ? histPeso.map(function (w) { return '<div class="hist-row"><span class="d">' + formatEs(w.fecha) + '</span><span class="v">' + Number(w.kg).toFixed(1) + '</span></div>'; }).join('')
+      ? histPeso.map(function (w) { return '<button type="button" class="hist-row" data-fecha="' + w.fecha + '"><span class="d">' + formatEs(w.fecha) + '</span><span class="v">' + Number(w.kg).toFixed(1) + '</span></button>'; }).join('')
       : '<div class="hist-empty">Aún sin registros. ¡Apunta el primero!</div>';
 
     // ---- sessions ----
@@ -563,20 +732,63 @@
 
     var histSessions = sessions.slice().reverse();
     document.getElementById('hist-pierna').innerHTML = histSessions.length
-      ? histSessions.map(function (s) { return '<div class="hist-row"><span class="d">' + formatEs(s.fecha) + '</span><span class="v">' + (s.nota ? s.nota : 'pierna') + '</span></div>'; }).join('')
+      ? histSessions.map(function (s) {
+          return '<button type="button" class="hist-row" data-id="' + esc(s.id) + '"><span class="d">' + formatEs(s.fecha) + '</span><span class="v">' + esc(s.nota ? s.nota : 'pierna') + '</span></button>';
+        }).join('')
       : '<div class="hist-empty">Aún sin registros. ¡Apunta la primera!</div>';
+
+    renderChart(weights, sessions);
   }
 
   render();
 
-  function setupDialog(openId, closeId, dialogId) {
+  function wireDialogChrome(dialogId, closeId) {
     var dialog = document.getElementById(dialogId);
-    document.getElementById(openId).addEventListener('click', function () { dialog.showModal(); });
     document.getElementById(closeId).addEventListener('click', function () { dialog.close(); });
     dialog.addEventListener('click', function (e) { if (e.target === dialog) { dialog.close(); } });
   }
-  setupDialog('open-weight', 'close-weight', 'weight-dialog');
-  setupDialog('open-session', 'close-session', 'session-dialog');
+  wireDialogChrome('weight-dialog', 'close-weight');
+  wireDialogChrome('session-dialog', 'close-session');
+
+  function openWeightDialog(entry) {
+    editingWeightDate = entry ? entry.fecha : null;
+    document.getElementById('weight-dialog-title').textContent = entry ? 'Editar registro de peso' : 'Registra tu peso';
+    document.getElementById('weight-submit').textContent = entry ? 'Guardar cambios' : 'Guardar peso';
+    document.getElementById('delete-weight').hidden = !entry;
+    var dateInput = document.getElementById('weight-date');
+    dateInput.value = entry ? entry.fecha : todayIso;
+    dateInput.disabled = !!entry;
+    var lastWeight = state.weights.length ? state.weights[state.weights.length - 1].kg : START_WEIGHT;
+    document.getElementById('weight-value').value = entry ? entry.kg : lastWeight;
+    document.getElementById('weight-dialog').showModal();
+  }
+
+  function openSessionDialog(entry) {
+    editingSessionId = entry ? entry.id : null;
+    document.getElementById('session-dialog-title').textContent = entry ? 'Editar sesión' : 'Registra tu sesión';
+    document.getElementById('session-submit').textContent = entry ? 'Guardar cambios' : 'Registrar sesión';
+    document.getElementById('delete-session').hidden = !entry;
+    document.getElementById('session-date').value = entry ? entry.fecha : todayIso;
+    document.getElementById('session-note').value = entry ? (entry.nota || '') : '';
+    document.getElementById('session-dialog').showModal();
+  }
+
+  document.getElementById('open-weight').addEventListener('click', function () { openWeightDialog(null); });
+  document.getElementById('open-session').addEventListener('click', function () { openSessionDialog(null); });
+
+  document.getElementById('hist-peso').addEventListener('click', function (e) {
+    var row = e.target.closest('.hist-row');
+    if (!row) { return; }
+    var entry = state.weights.find(function (w) { return w.fecha === row.dataset.fecha; });
+    if (entry) { openWeightDialog(entry); }
+  });
+
+  document.getElementById('hist-pierna').addEventListener('click', function (e) {
+    var row = e.target.closest('.hist-row');
+    if (!row) { return; }
+    var entry = state.sessions.find(function (s) { return String(s.id) === row.dataset.id; });
+    if (entry) { openSessionDialog(entry); }
+  });
 
   function flash(id, dialog) {
     var el = document.getElementById(id);
@@ -588,7 +800,7 @@
   }
 
   function disableForms(disabled) {
-    ['weight-submit', 'session-submit'].forEach(function (id) {
+    ['weight-submit', 'session-submit', 'delete-weight', 'delete-session'].forEach(function (id) {
       document.getElementById(id).disabled = disabled;
     });
     document.getElementById('notice').classList.toggle('show', disabled);
@@ -638,11 +850,19 @@
 
     document.getElementById('weight-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      var date = document.getElementById('weight-date').value;
+      var date = editingWeightDate || document.getElementById('weight-date').value;
       var kg = parseFloat(document.getElementById('weight-value').value);
       if (!date || isNaN(kg)) { return; }
       sb.from('peso_entries').upsert({ fecha: date, kg: kg }, { onConflict: 'fecha' }).then(function (res) {
         if (!res.error) { flash('weight-flash', document.getElementById('weight-dialog')); }
+      });
+    });
+
+    document.getElementById('delete-weight').addEventListener('click', function () {
+      if (!editingWeightDate) { return; }
+      if (!confirm('¿Eliminar este registro de peso?')) { return; }
+      sb.from('peso_entries').delete().eq('fecha', editingWeightDate).then(function (res) {
+        if (!res.error) { document.getElementById('weight-dialog').close(); }
       });
     });
 
@@ -651,11 +871,19 @@
       var date = document.getElementById('session-date').value;
       var nota = document.getElementById('session-note').value.trim();
       if (!date) { return; }
-      sb.from('sesion_entries').insert({ fecha: date, nota: nota }).then(function (res) {
-        if (!res.error) {
-          document.getElementById('session-note').value = '';
-          flash('session-flash', document.getElementById('session-dialog'));
-        }
+      var action = editingSessionId
+        ? sb.from('sesion_entries').update({ fecha: date, nota: nota }).eq('id', editingSessionId)
+        : sb.from('sesion_entries').insert({ fecha: date, nota: nota });
+      action.then(function (res) {
+        if (!res.error) { flash('session-flash', document.getElementById('session-dialog')); }
+      });
+    });
+
+    document.getElementById('delete-session').addEventListener('click', function () {
+      if (!editingSessionId) { return; }
+      if (!confirm('¿Eliminar esta sesión?')) { return; }
+      sb.from('sesion_entries').delete().eq('id', editingSessionId).then(function (res) {
+        if (!res.error) { document.getElementById('session-dialog').close(); }
       });
     });
   }).catch(function () { disableForms(true); });
