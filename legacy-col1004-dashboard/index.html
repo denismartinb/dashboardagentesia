@@ -1,0 +1,2867 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movistar 1004 · Dashboard Agentes IA</title>
+  <style>
+    :root{
+      --navy:#072042;
+      --navy-2:#0a2f63;
+      --blue:#0a4edb;
+      --cyan:#12b8d6;
+      --teal:#0f8d94;
+      --mint:#22c38e;
+      --amber:#ffbe55;
+      --coral:#ff6b5a;
+      --pink:#ff9b8a;
+      --sky:#dceeff;
+      --sky-2:#eff7ff;
+      --paper:#ffffff;
+      --page:#eaf3ff;
+      --ink:#0b1f37;
+      --muted:#5d6f89;
+      --line:#d8e6fb;
+      --shadow:0 24px 70px rgba(7,32,66,.12);
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:16px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    body{
+      font-family:"Avenir Next","Trebuchet MS","Segoe UI",sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(18,184,214,.18), transparent 24%),
+        radial-gradient(circle at 90% 0%, rgba(10,78,219,.14), transparent 26%),
+        linear-gradient(180deg, #f8fbff 0%, var(--page) 44%, #edf5ff 100%);
+    }
+
+    .dashboard{
+      max-width:1580px;
+      margin:0 auto;
+      padding:30px 24px 44px;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      padding:24px 28px 22px;
+      border-radius:34px;
+      box-shadow:var(--shadow);
+      background:
+        radial-gradient(circle at 78% 18%, rgba(255,255,255,.18), transparent 20%),
+        radial-gradient(circle at 20% 120%, rgba(18,184,214,.20), transparent 28%),
+        linear-gradient(135deg, #051731 0%, #08285c 30%, #0b4dbd 63%, #13bfd8 100%);
+      color:#fff;
+    }
+
+    .hero::before,
+    .hero::after{
+      content:"";
+      position:absolute;
+      border-radius:999px;
+      pointer-events:none;
+    }
+
+    .hero::before{
+      width:620px;
+      height:620px;
+      right:-160px;
+      top:-240px;
+      background:radial-gradient(circle, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 72%);
+    }
+
+    .hero::after{
+      width:700px;
+      height:360px;
+      left:-220px;
+      bottom:-210px;
+      background:radial-gradient(circle, rgba(18,184,214,.24) 0%, rgba(18,184,214,0) 72%);
+    }
+
+    .hero-grid{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:minmax(0, 1.08fr) minmax(340px, .92fr);
+      gap:20px;
+      align-items:start;
+    }
+
+    .hero-grid::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:28px;
+      background:
+        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size:34px 34px;
+      mask-image:linear-gradient(180deg, rgba(0,0,0,.48), transparent 86%);
+      opacity:.22;
+      pointer-events:none;
+    }
+
+    .hero-main{
+      position:relative;
+      z-index:1;
+      padding:4px 0 0;
+    }
+
+    .hero-brand{
+      position:absolute;
+      top:2px;
+      right:2px;
+      z-index:2;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:132px;
+      height:63px;
+      padding:0;
+    }
+
+    .hero-brand svg{
+      display:block;
+      width:100%;
+      height:auto;
+      color:#fff;
+      filter:drop-shadow(0 8px 18px rgba(0,0,0,.18));
+    }
+
+    .hero-illustration{
+      position:absolute;
+      right:-90px;
+      top:-46px;
+      width:760px;
+      height:430px;
+      z-index:0;
+      pointer-events:none;
+      opacity:.94;
+      filter:drop-shadow(0 30px 54px rgba(7,32,66,.28));
+    }
+
+    .hero-illustration svg{
+      width:100%;
+      height:100%;
+      display:block;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:16px;
+      font-size:12px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:rgba(255,255,255,.76);
+    }
+
+    .eyebrow::before{
+      content:"";
+      width:32px;
+      height:2px;
+      border-radius:999px;
+      background:rgba(255,255,255,.55);
+    }
+
+    .hero h1{
+      font-size:56px;
+      line-height:.98;
+      letter-spacing:-.04em;
+      max-width:700px;
+      margin-bottom:12px;
+      text-wrap:balance;
+    }
+
+    .hero p{
+      max-width:640px;
+      font-size:18px;
+      line-height:1.48;
+      color:rgba(255,255,255,.86);
+      text-wrap:balance;
+    }
+
+    .hero-panels{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:18px;
+      align-items:stretch;
+      margin-top:20px;
+      position:relative;
+      z-index:1;
+    }
+
+    .stack-card{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      border-radius:24px;
+      padding:20px 22px 18px;
+      border:1px solid rgba(255,255,255,.18);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.10) 100%);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 18px 38px rgba(6,18,55,.14);
+      backdrop-filter:blur(16px);
+    }
+
+    .stack-kicker{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      font-weight:800;
+      color:rgba(255,255,255,.74);
+      margin-bottom:8px;
+    }
+
+    .stack-title{
+      font-size:23px;
+      line-height:1.08;
+      font-weight:780;
+      letter-spacing:-.03em;
+      margin-bottom:8px;
+    }
+
+    .stack-copy{
+      font-size:14px;
+      line-height:1.5;
+      color:rgba(255,255,255,.82);
+    }
+
+    .stack-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .chip-card{
+      border-radius:18px;
+      padding:14px 14px 12px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .chip-label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:rgba(255,255,255,.66);
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    .chip-value{
+      font-size:22px;
+      line-height:1.05;
+      font-weight:780;
+    }
+
+    .chip-value-number{
+      display:block;
+    }
+
+    .stack-flow{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:8px;
+      margin-top:14px;
+    }
+
+    .stack-flow-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-height:46px;
+      padding:10px 12px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.08) 100%);
+      border:1px solid rgba(255,255,255,.14);
+      font-size:13px;
+      color:rgba(255,255,255,.9);
+      position:relative;
+    }
+
+    .stack-flow-row.is-wide{
+      grid-column:1 / -1;
+    }
+
+    .stack-flow-icon{
+      width:32px;
+      height:32px;
+      border-radius:12px;
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg, rgba(255,255,255,.18) 0%, rgba(143,233,255,.24) 100%);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
+    }
+
+    .stack-flow-icon svg{
+      width:18px;
+      height:18px;
+      stroke:#fff;
+      stroke-width:1.9;
+      fill:none;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    .section{
+      margin-top:28px;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .section-head h2{
+      white-space:nowrap;
+      font-size:13px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:var(--blue);
+    }
+
+    .section-head::after{
+      content:"";
+      height:1px;
+      flex:1;
+      background:linear-gradient(90deg, rgba(10,78,219,.18) 0%, rgba(18,184,214,.46) 100%);
+    }
+
+    .kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(6, minmax(0, 1fr));
+      gap:16px;
+    }
+
+    .kpi{
+      position:relative;
+      overflow:hidden;
+      background:var(--paper);
+      border-radius:24px;
+      border:1px solid rgba(10,78,219,.06);
+      box-shadow:var(--shadow);
+      padding:22px 22px 20px;
+      min-height:162px;
+    }
+
+    .kpi::before{
+      content:"";
+      position:absolute;
+      inset:0 auto 0 0;
+      width:6px;
+      background:var(--accent, var(--blue));
+    }
+
+    .kpi::after{
+      content:"";
+      position:absolute;
+      width:130px;
+      height:130px;
+      right:-42px;
+      bottom:-54px;
+      border-radius:999px;
+      background:radial-gradient(circle, color-mix(in srgb, var(--accent, var(--blue)) 18%, white) 0%, rgba(255,255,255,0) 72%);
+    }
+
+    .kpi-value{
+      font-size:44px;
+      line-height:.94;
+      letter-spacing:-.05em;
+      font-weight:850;
+      color:var(--ink);
+      margin-bottom:10px;
+    }
+
+    .kpi-label{
+      font-size:16px;
+      line-height:1.2;
+      font-weight:760;
+      margin-bottom:8px;
+    }
+
+    .kpi-sub{
+      font-size:13px;
+      line-height:1.5;
+      color:var(--muted);
+      max-width:220px;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:18px;
+    }
+
+    .grid-3{
+      display:grid;
+      grid-template-columns:1.22fr .86fr .92fr;
+      gap:18px;
+    }
+
+    .grid-3-balanced{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:18px;
+    }
+
+    .stacked-section{
+      display:grid;
+      gap:18px;
+    }
+
+    .card{
+      background:var(--paper);
+      border-radius:var(--radius-xl);
+      border:1px solid rgba(10,78,219,.06);
+      box-shadow:var(--shadow);
+      padding:24px;
+      min-width:0;
+    }
+
+    .card-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+    }
+
+    .card-title{
+      font-size:24px;
+      line-height:1.08;
+      letter-spacing:-.03em;
+      font-weight:780;
+      color:var(--ink);
+      margin-bottom:8px;
+    }
+
+    .card-subtitle{
+      font-size:14px;
+      line-height:1.58;
+      color:var(--muted);
+      max-width:640px;
+    }
+
+    .card-note{
+      font-size:12px;
+      line-height:1.55;
+      text-align:right;
+      color:var(--muted);
+      max-width:250px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      background:#f5faff;
+      border:1px solid var(--line);
+      font-size:12px;
+      font-weight:780;
+      color:var(--blue);
+      white-space:nowrap;
+    }
+
+    .sankey-wrap{
+      border-radius:26px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, #fbfdff 0%, #f5faff 100%);
+      padding:8px;
+    }
+
+    #sankeyChart{
+      width:100%;
+      min-height:500px;
+    }
+
+    .voice-summary{
+      display:grid;
+      gap:14px;
+    }
+
+    .voice-score{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:14px;
+      align-items:end;
+      padding-bottom:18px;
+      border-bottom:1px solid var(--line);
+    }
+
+    .voice-score p{
+      font-size:14px;
+      line-height:1.62;
+      color:var(--muted);
+      max-width:320px;
+    }
+
+    .voice-score.is-compact{
+      grid-template-columns:auto;
+      justify-content:end;
+      padding-bottom:8px;
+    }
+
+    .voice-score.is-compact p{
+      display:none;
+    }
+
+    .voice-score-value{
+      font-size:60px;
+      line-height:.9;
+      letter-spacing:-.06em;
+      font-weight:850;
+      color:var(--coral);
+    }
+
+    .stacked-bars{
+      display:grid;
+      gap:12px;
+      margin-top:8px;
+    }
+
+    .stacked-row{
+      display:grid;
+      gap:8px;
+    }
+
+    .stacked-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .stacked-name{
+      font-size:15px;
+      font-weight:740;
+      color:var(--ink);
+    }
+
+    .stacked-val{
+      font-size:15px;
+      font-weight:820;
+      color:var(--blue);
+    }
+
+    .stacked-track{
+      height:16px;
+      border-radius:999px;
+      background:#eaf2ff;
+      overflow:hidden;
+    }
+
+    .stacked-fill{
+      height:100%;
+      border-radius:999px;
+    }
+
+    .signal-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .signal-card{
+      padding:14px;
+      border-radius:16px;
+      background:#f7fbff;
+      border:1px solid var(--line);
+    }
+
+    .signal-card strong{
+      display:block;
+      font-size:24px;
+      line-height:1;
+      letter-spacing:-.04em;
+      margin-bottom:7px;
+      color:var(--ink);
+    }
+
+    .signal-card span{
+      font-size:12px;
+      line-height:1.5;
+      color:var(--muted);
+    }
+
+    .usecase-list{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:12px;
+    }
+
+    .usecase-card{
+      border-radius:20px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding:16px;
+      min-width:0;
+    }
+
+    .usecase-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .usecase-top > div:first-child{
+      min-width:0;
+    }
+
+    .usecase-name{
+      font-size:18px;
+      line-height:1.2;
+      font-weight:760;
+      color:var(--ink);
+      margin-bottom:4px;
+    }
+
+    .usecase-meta{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.55;
+      overflow-wrap:anywhere;
+    }
+
+    .usecase-resolution{
+      text-align:right;
+    }
+
+    .usecase-resolution strong{
+      display:block;
+      font-size:32px;
+      line-height:.92;
+      letter-spacing:-.05em;
+      color:var(--blue);
+      margin-bottom:4px;
+    }
+
+    .usecase-resolution span{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .metric-row{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .metric-chip{
+      padding:10px 12px;
+      border-radius:14px;
+      background:#fff;
+      border:1px solid var(--line);
+      min-width:0;
+    }
+
+    .metric-chip b{
+      display:block;
+      font-size:16px;
+      line-height:1.05;
+      color:var(--ink);
+      margin-bottom:4px;
+    }
+
+    .metric-chip span{
+      font-size:11px;
+      line-height:1.45;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+    }
+
+    .bar-group{
+      display:grid;
+      gap:10px;
+    }
+
+    .bar-item{
+      display:grid;
+      gap:7px;
+    }
+
+    .bar-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .bar-track{
+      height:10px;
+      border-radius:999px;
+      background:#eaf2ff;
+      overflow:hidden;
+    }
+
+    .bar-fill{
+      height:100%;
+      border-radius:999px;
+      background:var(--bar, var(--blue));
+    }
+
+    .heatmap{
+      display:grid;
+      gap:8px;
+    }
+
+    .heat-row,
+    .heat-head-row{
+      display:grid;
+      grid-template-columns:190px repeat(4, minmax(0, 1fr));
+      gap:8px;
+    }
+
+    .heat-head,
+    .heat-label,
+    .heat-cell{
+      min-height:64px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:10px;
+      min-width:0;
+    }
+
+    .heat-head{
+      background:#eef6ff;
+      border:1px solid var(--line);
+      color:var(--blue);
+      font-size:12px;
+      font-weight:820;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .heat-label{
+      justify-content:flex-start;
+      background:#f7fbff;
+      border:1px solid var(--line);
+      color:var(--ink);
+      font-size:14px;
+      line-height:1.35;
+      font-weight:740;
+    }
+
+    .heat-cell{
+      flex-direction:column;
+      gap:4px;
+      border:1px solid rgba(255,255,255,.5);
+      font-weight:820;
+    }
+
+    .heat-cell small{
+      font-size:11px;
+      font-weight:720;
+      opacity:.78;
+      letter-spacing:.02em;
+    }
+
+    .h0{background:#eff3fa;color:#8ea0bb}
+    .h1{background:#d9ebff;color:#0a4edb}
+    .h2{background:#abd3ff;color:#083f9a}
+    .h3{background:#5faff3;color:#fff}
+    .h4{background:#0a4edb;color:#fff}
+
+    .heat-legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .heat-legend span{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#f7fbff;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .heat-legend i{
+      width:16px;
+      height:16px;
+      border-radius:6px;
+      display:inline-block;
+    }
+
+    .chart-wrap{
+      border-radius:24px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, #fbfdff 0%, #f5faff 100%);
+      padding:12px;
+    }
+
+    #radarChart{
+      width:100%;
+      min-height:340px;
+      display:block;
+    }
+
+    .tool-lanes{
+      display:grid;
+      gap:12px;
+    }
+
+    .tool-card{
+      padding:15px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:#fbfdff;
+    }
+
+    .tool-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+
+    .tool-name{
+      font-size:17px;
+      font-weight:760;
+      line-height:1.18;
+      color:var(--ink);
+      margin-bottom:4px;
+    }
+
+    .tool-note{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .tool-score{
+      font-size:30px;
+      line-height:.95;
+      font-weight:850;
+      letter-spacing:-.05em;
+      color:var(--teal);
+      text-align:right;
+      min-width:64px;
+    }
+
+    .tool-metrics{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .tool-metrics span{
+      padding:7px 10px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid var(--line);
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+      font-weight:780;
+    }
+
+    .tool-progress{
+      height:10px;
+      border-radius:999px;
+      background:#e7f1fe;
+      overflow:hidden;
+    }
+
+    .tool-progress b{
+      display:block;
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg, var(--teal) 0%, var(--cyan) 100%);
+    }
+
+    .driver-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .driver-card{
+      padding:16px;
+      border-radius:20px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+      min-width:0;
+    }
+
+    .driver-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:8px;
+    }
+
+    .driver-top > *{
+      min-width:0;
+    }
+
+    .driver-name{
+      font-size:16px;
+      line-height:1.3;
+      font-weight:760;
+      color:var(--ink);
+      overflow-wrap:anywhere;
+    }
+
+    .driver-pct{
+      font-size:28px;
+      line-height:.95;
+      letter-spacing:-.05em;
+      font-weight:850;
+      color:var(--coral);
+      white-space:nowrap;
+    }
+
+    .driver-copy{
+      font-size:13px;
+      line-height:1.56;
+      color:var(--muted);
+      overflow-wrap:anywhere;
+    }
+
+    .word-cloud{
+      position:relative;
+      min-height:420px;
+      border-radius:28px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:
+        radial-gradient(circle at 18% 16%, rgba(18,184,214,.24) 0%, transparent 24%),
+        radial-gradient(circle at 82% 22%, rgba(10,78,219,.16) 0%, transparent 26%),
+        radial-gradient(circle at 48% 84%, rgba(34,195,142,.16) 0%, transparent 28%),
+        linear-gradient(180deg, #fbfdff 0%, #f3f9ff 100%);
+      isolation:isolate;
+    }
+
+    .word-cloud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,.38) 1px, transparent 1px);
+      background-size:52px 52px;
+      opacity:.22;
+      pointer-events:none;
+    }
+
+    .word-cloud::after{
+      content:"";
+      position:absolute;
+      inset:auto -12% -28% auto;
+      width:360px;
+      height:360px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,255,255,.78) 0%, rgba(255,255,255,0) 72%);
+      opacity:.7;
+      pointer-events:none;
+    }
+
+    .word-cloud-tree{
+      position:absolute;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      opacity:.92;
+    }
+
+    .word-cloud-stage{
+      position:absolute;
+      z-index:1;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(10,78,219,.12);
+      box-shadow:0 14px 36px rgba(10,78,219,.10);
+      font-size:11px;
+      line-height:1;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+      font-weight:820;
+      color:var(--blue);
+      backdrop-filter:blur(10px);
+    }
+
+    .word{
+      position:absolute;
+      z-index:2;
+      font-weight:820;
+      line-height:1;
+      letter-spacing:-.03em;
+      color:var(--word-color, var(--blue));
+      opacity:.96;
+      text-shadow:0 10px 24px rgba(255,255,255,.32);
+      transform:translate(-50%, -50%) rotate(var(--rotate, 0deg));
+      white-space:nowrap;
+    }
+
+    .insight-board{
+      display:grid;
+      gap:12px;
+    }
+
+    .insight-card{
+      padding:18px;
+      border-radius:22px;
+      background:linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border:1px solid var(--line);
+    }
+
+    .insight-label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--blue);
+      font-weight:820;
+      margin-bottom:8px;
+    }
+
+    .insight-title{
+      font-size:19px;
+      line-height:1.2;
+      font-weight:760;
+      color:var(--ink);
+      margin-bottom:8px;
+    }
+
+    .insight-copy{
+      font-size:14px;
+      line-height:1.6;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+
+    .insight-foot{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .insight-foot span{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:780;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--muted);
+    }
+
+    .commercial-layout{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:18px;
+    }
+
+    .commercial-tiles{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .commercial-tile{
+      padding:16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:#fbfdff;
+    }
+
+    .commercial-tile strong{
+      display:block;
+      font-size:34px;
+      line-height:.95;
+      letter-spacing:-.05em;
+      color:var(--ink);
+      margin-bottom:8px;
+    }
+
+    .commercial-tile b{
+      display:block;
+      font-size:15px;
+      font-weight:760;
+      margin-bottom:6px;
+    }
+
+    .commercial-tile span{
+      font-size:13px;
+      line-height:1.5;
+      color:var(--muted);
+    }
+
+    .funnel-list{
+      display:grid;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .funnel-item{
+      display:grid;
+      gap:8px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:#f7fbff;
+      border:1px solid var(--line);
+    }
+
+    .funnel-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .funnel-name{
+      font-size:15px;
+      font-weight:740;
+      color:var(--ink);
+    }
+
+    .funnel-value{
+      font-size:17px;
+      font-weight:820;
+      color:var(--blue);
+    }
+
+    .funnel-track{
+      height:14px;
+      border-radius:999px;
+      background:#e7f1fe;
+      overflow:hidden;
+    }
+
+    .funnel-fill{
+      display:block;
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg, var(--blue) 0%, var(--cyan) 100%);
+    }
+
+    .opportunity-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .opportunity-card{
+      display:grid;
+      gap:12px;
+      padding:16px;
+      border-radius:20px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+    }
+
+    .opportunity-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .opportunity-name{
+      font-size:17px;
+      font-weight:760;
+      line-height:1.2;
+      color:var(--ink);
+      margin-bottom:4px;
+    }
+
+    .opportunity-copy{
+      font-size:13px;
+      line-height:1.55;
+      color:var(--muted);
+    }
+
+    .opportunity-value{
+      font-size:22px;
+      line-height:.95;
+      letter-spacing:-.05em;
+      font-weight:850;
+      color:var(--mint);
+      white-space:nowrap;
+    }
+
+    .opportunity-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+
+    .opportunity-chip{
+      padding:10px 12px;
+      border-radius:14px;
+      background:#fff;
+      border:1px solid var(--line);
+    }
+
+    .opportunity-chip strong{
+      display:block;
+      font-size:16px;
+      line-height:1;
+      color:var(--ink);
+      margin-bottom:4px;
+    }
+
+    .opportunity-chip span{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+      font-weight:780;
+    }
+
+    .conversation-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:18px;
+    }
+
+    .conversation-toolbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .filter-chips{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .filter-chip{
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#f5faff;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:820;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      cursor:pointer;
+      transition:all .18s ease;
+    }
+
+    .filter-chip.active{
+      background:linear-gradient(135deg, #0a4edb 0%, #12b8d6 100%);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 12px 24px rgba(10,78,219,.18);
+    }
+
+    .fake-pagination{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .page-pill{
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:780;
+    }
+
+    .page-pill.active{
+      background:#0a4edb;
+      color:#fff;
+      border-color:#0a4edb;
+    }
+
+    .conversation-card{
+      padding:22px;
+      border-radius:28px;
+      background:linear-gradient(180deg, #ffffff 0%, #f6fbff 100%);
+      border:1px solid rgba(10,78,219,.08);
+      box-shadow:var(--shadow);
+    }
+
+    .conversation-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:14px;
+    }
+
+    .conversation-title{
+      font-size:22px;
+      line-height:1.08;
+      font-weight:770;
+      letter-spacing:-.03em;
+      color:var(--ink);
+      margin-bottom:8px;
+    }
+
+    .conversation-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .meta-pill{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      background:#f2f8ff;
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+
+    .conversation-outcome{
+      text-align:right;
+      min-width:140px;
+    }
+
+    .conversation-outcome strong{
+      display:block;
+      font-size:28px;
+      line-height:.95;
+      letter-spacing:-.05em;
+      margin-bottom:6px;
+      color:var(--blue);
+    }
+
+    .conversation-outcome span{
+      font-size:12px;
+      line-height:1.45;
+      color:var(--muted);
+    }
+
+    .conversation-summary{
+      font-size:15px;
+      line-height:1.6;
+      color:var(--muted);
+      margin-bottom:14px;
+    }
+
+    .transcript{
+      display:grid;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .bubble{
+      padding:12px 14px;
+      border-radius:18px;
+      font-size:14px;
+      line-height:1.6;
+      max-width:88%;
+    }
+
+    .bubble.client{
+      justify-self:start;
+      background:#edf5ff;
+      color:var(--ink);
+      border-top-left-radius:8px;
+    }
+
+    .bubble.agent{
+      justify-self:end;
+      background:linear-gradient(135deg, #093a92 0%, #0f8dd2 100%);
+      color:#fff;
+      border-top-right-radius:8px;
+    }
+
+    .conversation-foot{
+      display:grid;
+      gap:10px;
+      padding-top:14px;
+      border-top:1px solid var(--line);
+    }
+
+    .conversation-foot strong{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--blue);
+    }
+
+    .conversation-foot p{
+      font-size:14px;
+      line-height:1.58;
+      color:var(--muted);
+    }
+
+    .roadmap-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:18px;
+    }
+
+    .roadmap-card{
+      position:relative;
+      overflow:hidden;
+      padding:22px;
+      border-radius:28px;
+      background:linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+      border:1px solid rgba(10,78,219,.08);
+      box-shadow:var(--shadow);
+    }
+
+    .roadmap-card::before{
+      content:"";
+      position:absolute;
+      inset:0 auto 0 0;
+      width:6px;
+      background:var(--priority, var(--blue));
+    }
+
+    .roadmap-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .roadmap-badge{
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:820;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+      background:color-mix(in srgb, var(--priority, var(--blue)) 12%, white);
+      color:var(--priority, var(--blue));
+      border:1px solid color-mix(in srgb, var(--priority, var(--blue)) 18%, white);
+    }
+
+    .roadmap-owner{
+      font-size:12px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:780;
+    }
+
+    .roadmap-title{
+      font-size:22px;
+      line-height:1.1;
+      letter-spacing:-.03em;
+      font-weight:770;
+      color:var(--ink);
+      margin-bottom:8px;
+    }
+
+    .roadmap-copy{
+      font-size:14px;
+      line-height:1.6;
+      color:var(--muted);
+      margin-bottom:14px;
+    }
+
+    .roadmap-metrics{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+
+    .roadmap-metric{
+      padding:10px 12px;
+      border-radius:14px;
+      background:#fff;
+      border:1px solid var(--line);
+    }
+
+    .roadmap-metric strong{
+      display:block;
+      font-size:16px;
+      line-height:1;
+      margin-bottom:4px;
+      color:var(--ink);
+    }
+
+    .roadmap-metric span{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+      font-weight:780;
+    }
+
+    .footer-note{
+      margin-top:26px;
+      font-size:12px;
+      line-height:1.6;
+      color:var(--muted);
+      text-align:right;
+    }
+
+    @media (max-width: 1380px){
+      .kpi-grid{grid-template-columns:repeat(3, minmax(0, 1fr))}
+      .grid-3,
+      .grid-3-balanced,
+      .commercial-layout,
+      .roadmap-grid{grid-template-columns:repeat(2, minmax(0, 1fr))}
+      .conversation-grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width: 1120px){
+      .hero-grid{grid-template-columns:1fr}
+      .grid-2,
+      .grid-3,
+      .grid-3-balanced,
+      .commercial-layout,
+      .roadmap-grid{grid-template-columns:1fr}
+      .heat-head-row,
+      .heat-row{grid-template-columns:150px repeat(4, minmax(0, 1fr))}
+      .hero-panels{grid-template-columns:1fr}
+      .usecase-list{grid-template-columns:1fr}
+      .stack-grid{grid-template-columns:1fr}
+      .stack-flow{grid-template-columns:1fr}
+      .hero-illustration{
+        width:100%;
+        height:280px;
+        right:-40px;
+        top:10px;
+      }
+    }
+
+    @media (max-width: 820px){
+      .dashboard{padding:20px 16px 34px}
+      .hero{padding:24px}
+      .hero h1{font-size:38px}
+      .hero-brand{
+        width:114px;
+        height:54px;
+      }
+      .hero-panels .stack-card:last-child{display:none}
+      .card{padding:20px}
+      .chip-value-number{display:inline}
+      .chip-value-number::after{content:" "}
+      .card-header{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .badge{
+        white-space:normal;
+      }
+      .hero-illustration{
+        width:520px;
+        height:260px;
+        right:-150px;
+        top:18px;
+        opacity:.7;
+      }
+      .kpi-grid{grid-template-columns:repeat(2, minmax(0, 1fr))}
+      .flow-highlights,
+      .commercial-tiles,
+      .signal-grid,
+      .opportunity-grid,
+      .roadmap-metrics,
+      .metric-row{grid-template-columns:1fr 1fr}
+      .heat-row{
+        grid-template-columns:84px repeat(4, minmax(0, 1fr));
+      }
+      .heat-head-row{
+        display:grid;
+        grid-template-columns:84px repeat(4, minmax(0, 1fr));
+      }
+      .heatmap{gap:6px}
+      .heat-head,
+      .heat-label,
+      .heat-cell{
+        min-height:52px;
+        padding:6px;
+      }
+      .heat-head{
+        font-size:10px;
+        line-height:1.15;
+        letter-spacing:.05em;
+      }
+      .heat-label{
+        font-size:11px;
+        line-height:1.15;
+        justify-content:flex-start;
+        text-align:left;
+        overflow-wrap:anywhere;
+        word-break:break-word;
+      }
+      .heat-cell{
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        gap:2px;
+        text-align:center;
+      }
+      .heat-cell > div{
+        font-size:11px;
+        line-height:1;
+      }
+      .heat-cell small{
+        font-size:9px;
+        line-height:1.1;
+      }
+      .heat-legend{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+      }
+      .usecase-top,
+      .driver-top{flex-direction:column}
+      .usecase-resolution,
+      .driver-pct{text-align:left}
+      .conversation-head{flex-direction:column}
+      .conversation-outcome{text-align:left}
+    }
+
+    @media (max-width: 560px){
+      .grid-2{grid-template-columns:1fr}
+      .kpi-grid,
+      .flow-highlights,
+      .commercial-tiles,
+      .signal-grid,
+      .opportunity-grid,
+      .roadmap-metrics,
+      .metric-row{grid-template-columns:1fr}
+      .bubble{max-width:100%}
+      .card{padding:16px}
+      .hero{padding:22px 18px}
+      .hero-panels{margin-top:14px}
+      .driver-card,
+      .usecase-card{padding:14px}
+      .metric-chip{padding:9px 10px}
+      .heat-head-row,
+      .heat-row{grid-template-columns:70px repeat(4, minmax(0, 1fr))}
+      .heat-head,
+      .heat-label,
+      .heat-cell{min-height:48px;padding:5px}
+      .heat-head{font-size:9px}
+      .heat-label{font-size:10px}
+      .heat-cell > div{font-size:10px}
+      .heat-cell small{font-size:8px}
+      .heat-legend{grid-template-columns:1fr}
+      .driver-name,
+      .usecase-name{font-size:15px}
+      .usecase-resolution strong{font-size:26px}
+      .driver-pct{font-size:24px}
+      .hero h1{font-size:32px}
+      .eyebrow{font-size:11px; letter-spacing:.14em}
+      .card-title{font-size:22px}
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <header class="hero">
+      <div class="hero-grid">
+        <div class="hero-brand" aria-label="Logo Movistar">
+          <svg viewBox="0 0 1402.9 348.88" role="img" aria-label="Movistar" xmlns="http://www.w3.org/2000/svg">
+            <path fill="currentColor" d="M380.33.44a56.27,56.27,0,0,1,37.6,8.5c14.48,9.36,24.41,24.27,31.13,39.88,16.15,37.52,22.26,78.57,23.35,119.17.83,24.38-1.39,48.76-5.14,72.83-1.56,8.75-3.24,17.78-8,25.43-4.27,7-10.91,13-19.09,14.86-8.69,2-18.7-1.1-23.71-8.71-6.69-9.82-6.25-22.32-5.22-33.64,2.32-23.2,5.27-46.46,4.59-69.83-.4-9-1.21-18.3-5.55-26.34-4.63-8.72-15.39-14.07-25.08-11.43-7.41,1.94-13.6,6.86-18.81,12.29C356,154.51,348.9,168.13,343,182c-9.44,21.79-16.53,44.49-23.64,67.11-4.88,15.07-8.73,30.69-16.69,44.54-7.31,13.2-18.09,24.69-31.58,31.65-13.56,7.14-29,9.9-44.15,10.6a83.59,83.59,0,0,1-38.83-6.92c-17.4-7.78-31.38-21.84-41.13-38-15.54-26-30.26-52.46-45.41-78.68-4-6.76-8.25-13.56-14-19-3.41-3.21-7.79-5.91-12.64-5.72s-10.06,2.29-13.17,6.31c-3.32,4.29-4.47,9.81-5,15.1-1,11.4,1.12,22.79,3.72,33.86,4.14,17.24,9.89,34,14.93,51,2.81,10.17,6.2,20.43,6.18,31.09.08,8.38-3.68,17.26-11.32,21.35-10.4,5.36-24.58,2.28-31.67-7.11-9-11.36-13.32-25.41-18.17-38.84-10.23-30.58-17.9-62.26-20-94.51a255.55,255.55,0,0,1,4.94-67c4.17-20.36,10.17-40.67,20.86-58.63,8-13.49,19.11-25.57,33.28-32.66a67.81,67.81,0,0,1,50.93-4c14.29,4.83,25.19,15.88,35.17,26.71,15.39,18.75,28.17,39.46,41,60,8.16,13.85,18.47,27.4,33.19,34.71a39.93,39.93,0,0,0,40.44-2.72c9.26-6.45,15-16.65,19.12-26.9,11.79-28.69,22.65-57.82,36.18-85.76C328.18,24.68,351.93,3.9,380.33.44Z"/>
+            <path fill="currentColor" d="M1010.26,95.43a32.3,32.3,0,0,1,15.9.32c4.77,1.42,7.64,6.29,7.74,11.1.29,5.25.56,11.56-3.65,15.46-4.17,3.74-10.2,3.48-15.42,3.34-4.71-.1-10-2-12-6.59-1.85-4.44-1.59-9.46-1-14.14A11.22,11.22,0,0,1,1010.26,95.43Z"/>
+            <path fill="currentColor" d="m613.29 243.8q0-70.68 0-141.37h25.47c14.9 26.23 29.62 52.58 44.62 78.76 15.26-26.26 30.67-52.44 45.9-78.72 8.29-0.08 16.58 0 24.87 0q0 70.68 0 141.36h-29.63q0-40.51 0-81c-9.7 16.31-19.47 32.57-29.14 48.9q-12.46 0-24.91 0-15-24.91-30.05-49.81 0 41 0 82z"/>
+            <path fill="currentColor" d="m1158.2 120a112.81 112.81 0 0 1 29.61-4.37v26.91h26.22v19.36h-26.24v48.95c0 4.58 0.83 10.49 5.75 12.38 7.35 2.5 15.2 0.64 22.72 0 0.37 7 0.69 14 1 21a130.83 130.83 0 0 1-31.35 2.27c-7.61-0.54-15.8-2.59-21-8.55-5.45-6.3-6.64-15-6.79-23q0-26.5 0-53h-17.13v-16.29c5.7-1 11.39-2.07 17.1-3.08 0.14-7.58 0.09-15.06 0.11-22.58z"/>
+            <path fill="currentColor" d="M813.45,140.65c15.6-2.31,33-1.1,46.06,8.63C870.69,157.54,876,171.5,877.12,185c1.27,15.86-.61,33.3-11.12,46-9.39,11.44-24.77,15.84-39.1,15.75-13.79.3-28.61-3.11-38.55-13.24S774.77,208.77,774.54,195c-.27-13.94,2.4-28.86,11.67-39.77,6.81-8.13,16.91-12.88,27.24-14.57m4.81,22.83c-5.51,1.8-9.21,6.92-10.74,12.32-2.28,7.78-2.35,16-1.87,24.07.58,6.85,1.82,14.36,6.86,19.47,4.25,4.26,10.67,5.17,16.42,4.61a16.65,16.65,0,0,0,12.34-6.68c3.78-5.35,4.71-12.08,5.17-18.45.28-8.32.33-16.93-2.58-24.85-1.71-4.76-5.37-9-10.26-10.55A25.49,25.49,0,0,0,818.26,163.48Z"/>
+            <path fill="currentColor" d="m1059.6 150.64c7.28-7 17.48-9.73 27.28-10.64a106 106 0 0 1 41.86 5.24c-0.81 7.26-1.53 14.53-2.31 21.79a130.73 130.73 0 0 0-31.48-4.53c-4.61 0.1-9.61 0.26-13.5 3a6.54 6.54 0 0 0-0.16 10.11c3.3 2.6 7.58 3.39 11.59 4.29 10.18 2.1 21 3.35 29.87 9.24a25.28 25.28 0 0 1 10.88 16.7c1.83 9.94 0.28 21.29-7 28.81-7.8 8.2-19.48 10.93-30.37 11.8a120.75 120.75 0 0 1-43.23-5.27q1.13-11 2.28-22a125.92 125.92 0 0 0 32.58 4.76c5.08-0.13 10.58-0.12 15-2.91 3.87-2.51 4.36-8.91 0.58-11.73-4.49-3.27-10.23-3.81-15.51-4.89-9.63-1.78-20-3.37-27.8-9.7-6.5-5.14-9.31-13.62-9.21-21.69-0.28-8.23 2.59-16.7 8.65-22.38z"/>
+            <path fill="currentColor" d="m1237.9 143.36a185.59 185.59 0 0 1 40-3.64c9.17 0.42 18.69 1.81 26.68 6.64 6.16 3.65 10.12 10.16 11.88 17 2.38 8.69 1.48 17.77 1.66 26.66q0 26.91 0 53.81h-23.47a59.74 59.74 0 0 0-2.51-6 58 58 0 0 1-25.24 8.73c-9.43 0.78-19.51-0.4-27.51-5.82a29.56 29.56 0 0 1-12.35-19.74c-1.77-9.8-0.18-20.76 6.4-28.55 4.53-5.51 11.46-8.35 18.31-9.66 12.12-2.32 24.5-1.35 36.76-1.56 0-4.89 0.3-10.61-3.47-14.33-4.34-3.93-10.59-4.19-16.13-4.35a160.34 160.34 0 0 0-29.5 2.67q-0.79-10.9-1.46-21.81m26 57.75c-10.25 1.83-10.82 19.06-1 21.93 8.42 2.45 17.3 0.09 25.54-2q0-10.36 0-20.72c-8.21 0.26-16.52-0.84-24.59 0.74z"/>
+            <path fill="currentColor" d="m1366.8 150.63c10-8.14 23.4-11.75 36.12-10.44v26a90.69 90.69 0 0 0-33.24 1.66q0 38 0 75.94h-29.62q0-50.62 0-101.24h25.72q0.54 4.04 1.02 8.08z"/>
+            <path fill="currentColor" d="m884.56 142.56h31.92c7.6 23.18 14.72 46.53 22.51 69.66 7.27-23.19 14.17-46.49 21.42-69.68 9.87 0.08 19.75 0 29.62 0q-17.4 50.63-34.89 101.24h-34.44q-18.06-50.6-36.14-101.22z"/>
+            <path fill="currentColor" d="m1002.9 142.56h29.59q0.07 50.63 0 101.25h-29.62q0.02-50.62 0.03-101.25z"/>
+          </svg>
+        </div>
+        <div class="hero-main">
+          <div class="eyebrow">Analítica conversacional</div>
+          <h1>Agentes de IA COL - 1004</h1>
+          <p>Rendimiento operativo, transferencia a humano e impacto comercial en el Canal Telefónico.</p>
+        </div>
+
+        <div class="hero-illustration" aria-hidden="true">
+        <svg viewBox="0 0 520 360" fill="none">
+          <defs>
+            <linearGradient id="heroBeam" x1="74" y1="90" x2="438" y2="240" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#CFF7FF" stop-opacity=".95"/>
+              <stop offset=".42" stop-color="#7FD8FF" stop-opacity=".92"/>
+              <stop offset="1" stop-color="#FFFFFF" stop-opacity=".12"/>
+            </linearGradient>
+            <linearGradient id="heroCard" x1="250" y1="102" x2="450" y2="286" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FFFFFF" stop-opacity=".24"/>
+              <stop offset="1" stop-color="#9BE6FF" stop-opacity=".12"/>
+            </linearGradient>
+            <radialGradient id="heroOrb" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(361 137) rotate(90) scale(88 88)">
+              <stop stop-color="#DDFBFF" stop-opacity=".9"/>
+              <stop offset=".45" stop-color="#82DEFF" stop-opacity=".44"/>
+              <stop offset="1" stop-color="#82DEFF" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="heroGlow" x="0" y="0" width="520" height="360" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feGaussianBlur stdDeviation="12"/>
+            </filter>
+          </defs>
+          <circle cx="364" cy="136" r="88" fill="url(#heroOrb)"/>
+          <g opacity=".58" filter="url(#heroGlow)">
+            <path d="M76 214C134 150 178 114 244 110C295 106 332 144 382 140C420 137 450 108 470 82" stroke="#91E7FF" stroke-width="10" stroke-linecap="round"/>
+          </g>
+          <path d="M74 214C132 150 178 114 244 110C295 106 332 144 382 140C420 137 450 108 470 82" stroke="url(#heroBeam)" stroke-width="3.6" stroke-linecap="round"/>
+          <path d="M90 250C150 218 201 212 248 222C300 233 338 264 390 267C426 269 453 260 474 238" stroke="url(#heroBeam)" stroke-opacity=".44" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M128 90C170 62 214 58 248 74C285 91 299 122 333 132" stroke="#BFEFFF" stroke-opacity=".32" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="74" cy="214" r="10" fill="#D6F9FF"/>
+          <circle cx="244" cy="110" r="12" fill="#8FE9FF"/>
+          <circle cx="382" cy="140" r="10" fill="#DFFBFF"/>
+          <circle cx="470" cy="82" r="12" fill="#FFFFFF" fill-opacity=".42"/>
+          <circle cx="248" cy="222" r="9" fill="#7FD8FF"/>
+          <circle cx="390" cy="267" r="10" fill="#9CE8FF"/>
+          <g>
+            <rect x="218" y="176" width="208" height="118" rx="30" fill="url(#heroCard)" stroke="#FFFFFF" stroke-opacity=".18"/>
+            <rect x="244" y="196" width="70" height="44" rx="22" fill="#FFFFFF" fill-opacity=".12" stroke="#FFFFFF" stroke-opacity=".16"/>
+            <path d="M268 218C274 210 282 207 290 207C304 207 315 219 315 233C315 249 303 259 290 259C282 259 274 256 268 248" stroke="#DDFBFF" stroke-width="3" stroke-linecap="round"/>
+            <path d="M273 228H306" stroke="#A6F0FF" stroke-width="3.4" stroke-linecap="round"/>
+            <path d="M342 206H394" stroke="#DDFBFF" stroke-width="4" stroke-linecap="round"/>
+            <path d="M342 222H386" stroke="#DDFBFF" stroke-opacity=".86" stroke-width="4" stroke-linecap="round"/>
+            <path d="M342 238H398" stroke="#A9EEFF" stroke-width="4" stroke-linecap="round"/>
+            <path d="M244 262H398" stroke="#8FE9FF" stroke-opacity=".92" stroke-width="5" stroke-linecap="round"/>
+            <path d="M244 278H366" stroke="#FFFFFF" stroke-opacity=".54" stroke-width="4" stroke-linecap="round"/>
+          </g>
+          <g>
+            <rect x="112" y="74" width="86" height="48" rx="20" fill="#FFFFFF" fill-opacity=".10" stroke="#FFFFFF" stroke-opacity=".14"/>
+            <path d="M134 98H176" stroke="#DFFBFF" stroke-width="4" stroke-linecap="round"/>
+            <path d="M134 112H166" stroke="#95E9FF" stroke-width="4" stroke-linecap="round"/>
+          </g>
+          <g>
+            <path d="M313 74C331 66 350 64 366 69C385 76 398 92 405 111" stroke="#D9FAFF" stroke-opacity=".44" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M303 62C327 49 355 46 380 55C408 66 425 90 433 118" stroke="#D9FAFF" stroke-opacity=".22" stroke-width="2.4" stroke-linecap="round"/>
+          </g>
+        </svg>
+        </div>
+      </div>
+      <div class="hero-panels">
+        <div class="stack-card">
+          <div class="stack-kicker">Plataforma</div>
+          <div class="stack-title">Capacidades actuales de la plataforma agéntica</div>
+          <div class="stack-copy">Cobertura ya desplegada para consultas, autogestiones, soporte y casos comerciales dentro del perímetro actual.</div>
+          <div class="stack-grid">
+            <div class="chip-card">
+              <div class="chip-label">Cobertura actual</div>
+              <div class="chip-value"><span class="chip-value-number">11</span>categorías</div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Tools activas</div>
+              <div class="chip-value"><span class="chip-value-number">43</span>tools</div>
+            </div>
+            <div class="chip-card">
+              <div class="chip-label">Subcategorías</div>
+              <div class="chip-value"><span class="chip-value-number">56</span>subcategorías</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-card">
+          <div class="stack-kicker">Pipeline</div>
+          <div class="stack-title">Flujo operativo</div>
+          <div class="stack-flow">
+            <div class="stack-flow-row is-wide">
+              <span class="stack-flow-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M6 5h12v14H6z"/><path d="M9 9h6"/><path d="M9 13h4"/><path d="M8 18l3-3h2"/></svg>
+              </span>
+              Agente de Bienvenida y Autenticación (ANI + DNI)
+            </div>
+            <div class="stack-flow-row">
+              <span class="stack-flow-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"/><path d="M5 19a7 7 0 0 1 14 0"/><path d="M17 7h3"/><path d="M18.5 5.5v3"/></svg>
+              </span>
+              Agente de ya cliente
+            </div>
+            <div class="stack-flow-row">
+              <span class="stack-flow-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M6 8h12"/><path d="M6 12h7"/><path d="M6 16h9"/><path d="M17 10l2 2-2 2"/><path d="M4 5h16v14H4z"/></svg>
+              </span>
+              Agentes especializados
+            </div>
+            <div class="stack-flow-row is-wide">
+              <span class="stack-flow-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M7 18H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h2"/><path d="M17 18h2a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-2"/><path d="M7 10a5 5 0 0 1 10 0v4H7z"/><path d="M10 15h4"/></svg>
+              </span>
+              Paso a humano con resumen de conversación
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="kpi-grid" id="mainKpis"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Rendimiento conversacional</h2></div>
+      <div class="grid-2">
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Flujo operativo de las llamadas</div>
+              <div class="card-subtitle">Vista tipo Sankey para entender cuánto volumen cae dentro del perímetro, cuánto se resuelve con IA, qué parte necesita colaboración humana y dónde se pierde valor.</div>
+            </div>
+            <div class="badge">IA + humano + fuera de perímetro</div>
+          </div>
+          <div class="sankey-wrap">
+            <div id="sankeyChart"></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Nivel de calidad</div>
+              <div class="card-subtitle">Combinación de NPS, sentimiento al cierre y señales de fricción dentro de la conversación.</div>
+            </div>
+            <div class="badge">NPS + sentimiento</div>
+          </div>
+          <div class="voice-summary" id="voiceSummary"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Cobertura por caso de uso</h2></div>
+      <div class="stacked-section">
+        <div class="grid-2">
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Principales motivos de transferencia a humano</div>
+                <div class="card-subtitle">Separación entre derivaciones necesarias por política y derivaciones evitables por falta de capacidad o contexto.</div>
+              </div>
+              <div class="badge">Drivers de handoff</div>
+            </div>
+            <div class="driver-list" id="transferDrivers"></div>
+          </article>
+
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Mapa de calor de capacidades</div>
+                <div class="card-subtitle">Lectura rápida por capacidad para detectar dónde el sistema resuelve mejor y dónde todavía genera más transferencia o recontacto.</div>
+              </div>
+              <div class="badge">Capacidades x métricas</div>
+            </div>
+            <div class="heatmap" id="heatmap"></div>
+            <div class="heat-legend">
+              <span><i class="h0"></i>Muy débil</span>
+              <span><i class="h1"></i>Débil</span>
+              <span><i class="h2"></i>Medio</span>
+              <span><i class="h3"></i>Fuerte</span>
+              <span><i class="h4"></i>Muy fuerte</span>
+            </div>
+          </article>
+        </div>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Rendimiento por capacidad</div>
+            <div class="card-subtitle">Taxonomía sintética basada en las categorías del 1004 y en los casos de uso del piloto: factura, averías, roaming, TV, productos, pedidos, PUK, spam, segunda fibra, reclamaciones y bajas.</div>
+          </div>
+            <div class="card-note">Cada bloque muestra volumen, resolución, transferencia, NPS, recontacto, sentimiento y entendimiento IA.</div>
+          </div>
+          <div class="usecase-list" id="useCaseList"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Calidad del sistema</h2></div>
+      <div class="grid-3-balanced">
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Madurez de las capacidades</div>
+              <div class="card-subtitle">Radar sintético para visualizar dónde invertir: autenticación, grounding, empatía, cumplimiento comercial, contexto multiintención y cobertura transaccional.</div>
+            </div>
+            <div class="badge">0-100</div>
+          </div>
+          <div class="chart-wrap">
+            <svg id="radarChart" viewBox="0 0 420 340" aria-label="Gráfico radar de madurez"></svg>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Performance técnico de tools y APIs</div>
+              <div class="card-subtitle">Latencia, fiabilidad y calidad percibida de los principales bloques del stack operativo.</div>
+            </div>
+            <div class="badge">Tool health</div>
+          </div>
+          <div class="tool-lanes" id="toolLanes"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Dolores e insights</h2></div>
+      <div class="grid-2">
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Casos con mayor impacto económico</div>
+              <div class="card-subtitle">Lectura priorizada de los casos donde la IA aporta más valor en retención, conversión o percepción de servicio.</div>
+            </div>
+            <div class="badge">Valor trimestral ilustrativo</div>
+          </div>
+          <div class="opportunity-list" id="opportunityList"></div>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Hallazgos accionables</div>
+              <div class="card-subtitle">Ejemplos del tipo de lectura ejecutiva que conviene sacar del dashboard para priorizar entrenamiento, producto y operaciones.</div>
+            </div>
+            <div class="badge">Optimización continua</div>
+          </div>
+          <div class="insight-board" id="insightBoard"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Nube de temas y árbol conversacional</h2></div>
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Nube de temas calientes</div>
+            <div class="card-subtitle">Vista cualitativa de lo que más aparece en conversaciones complejas o sensibles, con una lectura visual del árbol de decisión que sigue la IA.</div>
+          </div>
+          <div class="badge">Pain topics</div>
+        </div>
+        <div class="word-cloud" id="wordCloud"></div>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Análisis de conversaciones</h2></div>
+      <div class="conversation-toolbar">
+        <div class="filter-chips" id="conversationFilters"></div>
+      </div>
+      <div class="conversation-grid" id="conversationGrid"></div>
+      <div class="fake-pagination" id="conversationPagination"></div>
+    </section>
+
+    <div class="footer-note">Dashboard ilustrativo. Datos, conversaciones, métricas y oportunidades comerciales son sintéticos pero están inspirados en las categorías del 1004, las capacidades listadas en las presentaciones y los guiones demo compartidos.</div>
+  </div>
+
+  <script>
+    const dashboardData = {
+      kpis: [
+        { value: "18.420", label: "Llamadas entrantes", sub: "Volumen total gestionado en el periodo ilustrativo.", accent: "#0a4edb" },
+        { value: "11.015", label: "Llamadas resueltas IA", sub: "Conversaciones cerradas sin intervención humana.", accent: "#12b8d6" },
+        { value: "59,8%", label: "Resolución IA", sub: "Cierre automático dentro del perímetro actual.", accent: "#22c38e" },
+        { value: "34,1%", label: "Paso a agente", sub: "Transferencias por política o falta de capacidad.", accent: "#ffbe55" },
+        { value: "6,1%", label: "Abandono", sub: "Cuelgue o caída antes de cierre.", accent: "#93a9c7" },
+        { value: "+36", label: "NPS", sub: "Promotores 51%, neutros 34%, detractores 15%.", accent: "#ff6b5a" }
+      ],
+      flow: {
+        stages: [
+          [{ id: "calls", label: "Llamadas 1004", value: 18420, color: "#0a4edb" }],
+          [
+            { id: "eligible", label: "Dentro del perímetro IA", value: 14680, color: "#12b8d6" },
+            { id: "recalls", label: "Rellamadas", value: 1620, color: "#8fd9ff" },
+            { id: "outscope", label: "Fuera de perímetro / política", value: 3740, color: "#ffbe55" }
+          ],
+          [
+            { id: "resolved", label: "Resueltas por IA", value: 11015, color: "#22c38e" },
+            { id: "human", label: "Transferidas a humano", value: 6281, color: "#ff6b5a" },
+            { id: "drop", label: "Abandono", value: 1124, color: "#93a9c7" }
+          ]
+        ],
+        links: [
+          { source: "calls", target: "eligible", value: 13060, color: "#12b8d6" },
+          { source: "calls", target: "recalls", value: 1620, color: "#8fd9ff" },
+          { source: "calls", target: "outscope", value: 3740, color: "#ffbe55" },
+          { source: "recalls", target: "eligible", value: 1620, color: "#8fd9ff" },
+          { source: "eligible", target: "resolved", value: 11015, color: "#22c38e" },
+          { source: "eligible", target: "human", value: 2541, color: "#ff6b5a" },
+          { source: "eligible", target: "drop", value: 1124, color: "#93a9c7" },
+          { source: "outscope", target: "human", value: 3740, color: "#ffbe55" }
+        ],
+        highlights: [
+          { value: "93%", label: "Autenticación satisfactoria cuando el cliente es titular y la petición requiere dato sensible." },
+          { value: "60%", label: "Contención automática en consultas simples antes de tocar routing humano." },
+          { value: "6,7 p.p.", label: "Transferencia evitable atribuible a falta de tool o baja confianza del modelo." },
+          { value: "31 seg", label: "Ahorro medio frente a routing tradicional cuando el caso cae en IA con fit alto." }
+        ]
+      },
+      voice: {
+        nps: "+36",
+        bars: [
+          { name: "Promotores", value: 51, color: "#22c38e" },
+          { name: "Neutros", value: 34, color: "#ffbe55" },
+          { name: "Detractores", value: 15, color: "#ff6b5a" }
+        ],
+        signals: [
+          { value: "8,9%", label: "Recontacto en 7 días tras resolución declarada por la IA." },
+          { value: "12,4%", label: "Conversaciones con emoción negativa explícita o amenaza de baja." },
+          { value: "81%", label: "Cierres donde el cliente verbaliza que la respuesta le ha resultado útil." },
+          { value: "37", label: "Alarmas semanales QA por respuesta dudosa, vacíos o confirmación incompleta." }
+        ]
+      },
+      useCases: [
+        { name: "Factura y consumos", family: "Consulta", volume: 2820, resolution: 81, handoff: 12, nps: 34, repeat: 8, coverage: 92, avgHandle: "3:42", confidence: 88, pain: "Cargos extra y comparación entre meses." },
+        { name: "Averías y seguimiento técnico", family: "Servicio", volume: 2480, resolution: 63, handoff: 28, nps: 12, repeat: 19, coverage: 69, avgHandle: "5:10", confidence: 76, pain: "Explicación del estado y falta de detalle operativo." },
+        { name: "Roaming y eSIMFlag", family: "Consulta / venta", volume: 1640, resolution: 78, handoff: 9, nps: 29, repeat: 11, coverage: 87, avgHandle: "4:02", confidence: 84, pain: "Precio percibido alto y contratación fuera del canal." },
+        { name: "TV, fútbol y contenidos", family: "Consulta / retención", volume: 1580, resolution: 74, handoff: 14, nps: 26, repeat: 13, coverage: 81, avgHandle: "5:26", confidence: 79, pain: "Calendario, partidos y precio final tras promo." },
+        { name: "Productos contratados", family: "Consulta", volume: 1470, resolution: 76, handoff: 11, nps: 31, repeat: 10, coverage: 84, avgHandle: "3:18", confidence: 83, pain: "Desglose del parque y recomendación correcta." },
+        { name: "PUK y gestiones de línea", family: "Autogestión", volume: 1360, resolution: 89, handoff: 5, nps: 48, repeat: 4, coverage: 95, avgHandle: "2:04", confidence: 91, pain: "Errores puntuales al pedir identificadores innecesarios." },
+        { name: "Seguimiento de pedidos y tienda", family: "Seguimiento", volume: 980, resolution: 84, handoff: 8, nps: 37, repeat: 7, coverage: 90, avgHandle: "2:58", confidence: 87, pain: "Confusión entre consulta y contratación." },
+        { name: "Spam y protección de llamadas", family: "Autogestión", volume: 760, resolution: 91, handoff: 4, nps: 52, repeat: 3, coverage: 96, avgHandle: "1:54", confidence: 93, pain: "Muy poco dolor: caso perfecto para automatizar." },
+        { name: "Segunda Fibra / BAF", family: "Comercial", volume: 710, resolution: 59, handoff: 23, nps: 10, repeat: 17, coverage: 61, avgHandle: "6:12", confidence: 71, pain: "Aceptación comercial y cierre sin inventar contratación." },
+        { name: "Reclamaciones económicas", family: "Reclamación", volume: 1240, resolution: 34, handoff: 51, nps: -8, repeat: 24, coverage: 48, avgHandle: "6:44", confidence: 62, pain: "Explicaciones largas, emociones negativas y devoluciones." },
+        { name: "Bajas y cancelaciones", family: "Baja", volume: 1360, resolution: 8, handoff: 86, nps: -22, repeat: 18, coverage: 19, avgHandle: "4:21", confidence: 67, pain: "El objetivo es contener o escalar, no automatizar ciegamente." }
+      ],
+      heatmap: {
+        columns: ["Factura", "Averías", "Roaming", "TV / Fútbol", "Gestiones línea", "Reclam. / Bajas"],
+        rows: [
+          { label: "Resolución IA", suffix: "%", invert: false, values: [81, 63, 78, 74, 84, 21] },
+          { label: "Paso a humano", suffix: "%", invert: true, values: [12, 28, 9, 14, 8, 68] },
+          { label: "Recontacto", suffix: "%", invert: true, values: [8, 19, 11, 13, 7, 24] },
+          { label: "TMO medio", suffix: "", invert: true, values: ["3:42", "5:10", "4:02", "5:26", "2:31", "5:41"], qualityValues: [82, 58, 75, 55, 89, 49] }
+        ]
+      },
+      radar: [
+        { label: "Autenticación", value: 93 },
+        { label: "Cobertura tools", value: 78 },
+        { label: "Análisis de sentimiento", value: 74 },
+        { label: "Empatía y tono", value: 86 },
+        { label: "Cumplimiento comercial", value: 69 },
+        { label: "Contexto multiintención", value: 58 }
+      ],
+      tools: [
+        { name: "Autenticador ANI + DNI", score: 93, latency: "14 s", failure: "7%", note: "Base de seguridad para factura, PUK, datos personales y cambios sensibles." },
+        { name: "Factura + consumos API", score: 71, latency: "5,4 s", failure: "4%", note: "Útil en desglose, pero con peor experiencia en tiempos de respuesta y casos de reclamación o mezcla con baja." },
+        { name: "Catálogo TV + fútbol", score: 79, latency: "2,1 s", failure: "9%", note: "Buen soporte a contenidos y promo, con riesgo si la programación cambia." },
+        { name: "Roaming + eSIMFlag", score: 85, latency: "1,4 s", failure: "3%", note: "Explica tarifas y alternativas, pero la contratación sigue fuera del flujo." },
+        { name: "Averías + citas", score: 61, latency: "3,9 s", failure: "17%", note: "Necesita más granularidad y lenguaje cliente en estados y pasos siguientes." },
+        { name: "Transacciones comerciales", score: 57, latency: "4,6 s", failure: "19%", note: "Punto rojo en aceptación de condiciones, coberturas y cierres end-to-end." }
+      ],
+      transferDrivers: [
+        { name: "Bajas, cancelaciones y reclamaciones reguladas", pct: 29, copy: "Transferencia deliberada por política operativa o por necesidad de negociación humana." },
+        { name: "Falta de tool transaccional end-to-end", pct: 24, copy: "Segunda fibra, cambios sensibles, contratos o gestiones que todavía no se pueden cerrar con seguridad." },
+        { name: "Desacuerdo con el cargo o la explicación", pct: 17, copy: "El cliente no cuestiona solo el dato: cuestiona la legitimidad del cobro y pide revisión humana." },
+        { name: "Baja confianza con multiintención", pct: 12, copy: "Casos que mezclan factura, venta, reclamación y amenaza de baja en una sola llamada." },
+        { name: "Datos incompletos o latencia de APIs", pct: 10, copy: "La IA detecta que no tiene el contexto fiable suficiente y evita inventar." },
+        { name: "Petición expresa de persona", pct: 8, copy: "Necesidad emocional, confirmación humana o hábito de canal ante gestiones delicadas." }
+      ],
+      words: [
+        { text: "gasto extra", size: 40, x: 28, y: 24, color: "#0a4edb", rotate: -6 },
+        { text: "reclamación", size: 38, x: 63, y: 20, color: "#ff6b5a", rotate: 0 },
+        { text: "fútbol", size: 34, x: 78, y: 40, color: "#12b8d6", rotate: 3 },
+        { text: "segunda fibra", size: 30, x: 22, y: 48, color: "#0f8d94", rotate: 0 },
+        { text: "promo retención", size: 28, x: 58, y: 48, color: "#22c38e", rotate: -3 },
+        { text: "avería sigue en curso", size: 26, x: 78, y: 64, color: "#0a2f63", rotate: -2 },
+        { text: "comparar facturas", size: 26, x: 35, y: 70, color: "#ffbe55", rotate: 2 },
+        { text: "roaming EEUU", size: 24, x: 15, y: 78, color: "#0a4edb", rotate: -4 },
+        { text: "eSIMFlag", size: 22, x: 62, y: 78, color: "#12b8d6", rotate: 0 },
+        { text: "spam", size: 22, x: 82, y: 24, color: "#22c38e", rotate: 8 },
+        { text: "email resumen", size: 20, x: 48, y: 31, color: "#0f8d94", rotate: -8 },
+        { text: "baja internet", size: 24, x: 84, y: 82, color: "#ff6b5a", rotate: -5 },
+        { text: "PUK", size: 24, x: 13, y: 28, color: "#0a2f63", rotate: 0 },
+        { text: "roaming Filipinas", size: 18, x: 40, y: 89, color: "#12b8d6", rotate: 0 },
+        { text: "llamadas molestas", size: 20, x: 16, y: 61, color: "#22c38e", rotate: 5 },
+        { text: "calendario mundial", size: 18, x: 60, y: 61, color: "#ffbe55", rotate: -6 }
+      ],
+      insights: [
+        {
+          label: "Insight 01",
+          title: "Las llamadas con mezcla factura + amenaza de baja concentran la mayor fricción.",
+          copy: "El patrón más sensible combina explicación de cargos, sensación de pagar demasiado y petición de cancelar. Aunque la IA explique bien el origen del cobro, si no ofrece siguiente paso claro o derivación empática la satisfacción cae rápido.",
+          tags: ["Routing enriquecido", "Entrenamiento tono", "Factura + baja"]
+        },
+        {
+          label: "Insight 02",
+          title: "La oportunidad comercial más rentable aparece después de resolver, no antes.",
+          copy: "En fútbol, segunda fibra o roaming, el cliente escucha ofertas cuando siente que primero se le ha ayudado. Las conversaciones que intentan vender antes de cerrar la duda principal tienen peor conversión y peor NPS.",
+          tags: ["Next best action", "Secuencia conversacional", "Cross-sell"]
+        },
+        {
+          label: "Insight 03",
+          title: "PUK, spam y pedidos son la zona de confianza para acelerar automatización.",
+          copy: "Estos casos muestran alta resolución, baja transferencia y poca emocionalidad. Son buenos candidatos para mover más volumen a IA, endurecer SLAs y usar como escaparate de calidad del asistente.",
+          tags: ["Quick wins", "Automatización", "Escalado volumen"]
+        },
+        {
+          label: "Insight 04",
+          title: "Averías necesita más detalle operativo y lenguaje cliente.",
+          copy: "El problema no es solo tener el dato de estado. El cliente quiere entender qué significa el estado, qué ocurrirá después y si debe hacer algo. Ahí es donde todavía se siente respuesta demasiado interna.",
+          tags: ["Copy conversacional", "Averías", "Grounding"]
+        }
+      ],
+      commercial: {
+        opportunities: [
+          { name: "Retención fútbol", value: "+148 k€ de ARPU", copy: "Caso de mayor impacto cuando la IA parte del precio oficial de Fútbol Total y aterriza el ahorro de la promo exclusiva hasta finales de agosto.", chips: [{ value: "44%", label: "aceptación" }, { value: "182", label: "baja" }, { value: "6:42", label: "TMO" }] },
+          { name: "Segunda Fibra", value: "+92k€ ingresos", copy: "Palanca clara de crecimiento, especialmente cuando la conversación viene precedida de una autogestión o una consulta técnica ya resuelta.", chips: [{ value: "3,2%", label: "ratio conversión" }, { value: "310", label: "altas" }, { value: "256", label: "reposicionamientos" }] },
+          { name: "Consulta de PUK", value: "180 k€ de eficiencias", copy: "Caso ultrarrápido y de altísima automatización, muy valioso por volumen y por el ahorro operativo acumulado.", chips: [{ value: "4.523", label: "gestiones" }, { value: "+78", label: "NPS" }, { value: "23 s", label: "TMO" }] },
+          { name: "Bloqueo spam y servicios protección", value: "32 k€ de eficiencias", copy: "Excelente efecto en satisfacción y confianza cuando la activación se completa en la misma llamada.", chips: [{ value: "+88", label: "NPS" }, { value: "390", label: "activaciones" }, { value: "1:54", label: "TMO" }] }
+        ]
+      },
+      conversations: [
+        {
+          status: "resolved",
+          title: "Retención fútbol con promo exclusiva",
+          meta: ["Retención", "6:42", "Email resumen"],
+          outcomeValue: "Resuelta",
+          outcomeLabel: "Promo aceptada",
+          summary: "La IA explica el producto Fútbol Total, recuerda que el precio base es 50 €/mes y ofrece la promo exclusiva de 30 € hasta finales de agosto.",
+          messages: [
+            { who: "client", text: "Quiero saber cuánto pago por el fútbol y si me compensa seguir con ello." },
+            { who: "agent", text: "Ahora mismo Fútbol Total tiene un precio de 50 €/mes y para disfrutarlo necesitas tener contratado Movistar Plus+. Puedo ofrecerte una promo exclusiva para dejarlo en 30 €/mes hasta finales de agosto." },
+            { who: "client", text: "¿Y qué incluye exactamente?" },
+            { who: "agent", text: "Incluye LALIGA, Champions, Europa y Conference League, Supercopas, Copa del Rey y todo el Mundial 2026. Si quieres, te envío por email el resumen con el ahorro." }
+          ],
+          learn: "Medir claridad al explicar precio base, promo y requisitos de Movistar Plus+."
+        },
+        {
+          status: "resolved",
+          title: "Roaming EEUU con alternativa eSIMFlag",
+          meta: ["Roaming", "4:08", "SMS"],
+          outcomeValue: "Resuelta",
+          outcomeLabel: "Información + enlace",
+          summary: "La conversación aclara tarifas roaming y ofrece eSIMFlag como opción de datos ilimitados por 3,5 € al día, derivando correctamente a web.",
+          messages: [
+            { who: "client", text: "Viajo a Estados Unidos y necesito algo más barato para los datos." },
+            { who: "agent", text: "Además del roaming estándar, puedes usar eSIMFlag con datos ilimitados por 3,5 € al día. Es una alternativa pensada para navegar y no incluye llamadas." },
+            { who: "client", text: "Perfecto, mándamelo por SMS." },
+            { who: "agent", text: "Te envío ahora mismo el enlace al número llamante para que completes la contratación en la web." }
+          ],
+          learn: "Cruzar SMS enviados con clic y contratación posterior."
+        },
+        {
+          status: "resolved",
+          title: "Consulta de PUK",
+          meta: ["PUK", "2:03", "Autogestión"],
+          outcomeValue: "Resuelta",
+          outcomeLabel: "Gestión completada",
+          summary: "Caso corto, muy limpio y perfecto para automatización total.",
+          messages: [
+            { who: "client", text: "Necesito el PUK de una de mis líneas." },
+            { who: "agent", text: "Te identifico con DNI y te confirmo la línea. Ya puedo darte el código PUK." },
+            { who: "client", text: "Sí, esa es." },
+            { who: "agent", text: "Perfecto, te facilito el PUK y te indico cómo introducirlo en el terminal." }
+          ],
+          learn: "Caso ideal para empujar volumen a IA y endurecer SLA."
+        },
+        {
+          status: "resolved",
+          title: "Consulta de productos contratados",
+          meta: ["Parque", "3:18", "Consulta"],
+          outcomeValue: "Resuelta",
+          outcomeLabel: "Información servida",
+          summary: "La IA enumera correctamente productos, paquete convergente y contenidos activos.",
+          messages: [
+            { who: "client", text: "Quiero saber exactamente qué tengo contratado." },
+            { who: "agent", text: "Tienes fibra 600 Mb, dos líneas móviles, Movistar Plus+ y el paquete de ficción. También tienes activado el buzón de voz." },
+            { who: "client", text: "Vale, eso era." },
+            { who: "agent", text: "Si quieres, te puedo explicar también el detalle de cada línea o de tus contenidos." }
+          ],
+          learn: "Muy útil para medir precisión de parque y claridad del resumen."
+        },
+        {
+          status: "hybrid",
+          title: "Bloqueo spam + segunda fibra",
+          meta: ["Spam + comercial", "7:05", "Lead caliente"],
+          outcomeValue: "Híbrida",
+          outcomeLabel: "Autogestión + lead",
+          summary: "La IA resuelve el dolor inicial y luego abre oportunidad comercial sin forzar el cierre.",
+          messages: [
+            { who: "client", text: "Me llaman mucho para spam y además quiero saber lo de una segunda fibra." },
+            { who: "agent", text: "Puedo activar ahora mismo el bloqueo de llamadas spam. Además, veo cobertura para segunda fibra en tu dirección." },
+            { who: "client", text: "Activa el bloqueo y mándame las condiciones." },
+            { who: "agent", text: "Bloqueo activado. Te envío las condiciones comerciales y el proceso quedará pendiente de tu aceptación expresa." }
+          ],
+          learn: "Secuencia ideal: resolver primero, vender después."
+        },
+        {
+          status: "hybrid",
+          title: "Factura comparada + reclamación",
+          meta: ["Factura", "8:11", "Escalado parcial"],
+          outcomeValue: "Híbrida",
+          outcomeLabel: "Explicación + devolución provisional",
+          summary: "La IA explica la diferencia entre facturas y deja iniciada la reclamación antes de escalar el último tramo.",
+          messages: [
+            { who: "client", text: "En abril me habéis cobrado más que en marzo." },
+            { who: "agent", text: "He comparado ambas facturas y el incremento viene de un cargo internacional de 18,40 €. Puedo dejar registrada la devolución provisional mientras se revisa." },
+            { who: "client", text: "Haz la reclamación, pero quiero seguimiento." },
+            { who: "agent", text: "La dejo abierta y, si quieres revisar el caso a fondo, te paso con un agente con el contexto ya resumido." }
+          ],
+          learn: "Muy buen caso para medir cuánto trabajo previo descarga la IA antes del humano."
+        },
+        {
+          status: "hybrid",
+          title: "Avería + cita técnica",
+          meta: ["Averías", "6:27", "Coordinación"],
+          outcomeValue: "Híbrida",
+          outcomeLabel: "Diagnóstico + paso asistido",
+          summary: "La IA identifica avería en curso, explica siguiente paso y deja preparada la cita para revisión humana.",
+          messages: [
+            { who: "client", text: "Sigo sin internet y no sé qué pasa con la avería." },
+            { who: "agent", text: "Tu avería sigue abierta y está pendiente de una visita técnica. Te puedo confirmar la franja prevista y preparar el caso." },
+            { who: "client", text: "Quiero cerrarlo hoy." },
+            { who: "agent", text: "Te paso con el equipo técnico con el estado, la línea afectada y la franja ya trasladados." }
+          ],
+          learn: "Conviene traducir mejor los estados internos a lenguaje cliente."
+        },
+        {
+          status: "hybrid",
+          title: "TV contratada + resumen por email",
+          meta: ["TV", "5:14", "Follow-up"],
+          outcomeValue: "Híbrida",
+          outcomeLabel: "Consulta + envío",
+          summary: "La IA resuelve la duda de contenidos y hace un cierre asistido con resumen enviado.",
+          messages: [
+            { who: "client", text: "Dime qué canales de TV tengo ahora mismo." },
+            { who: "agent", text: "Tienes Movistar Plus+ y el paquete de ficción. Si añades Fútbol Total podrías ver todo el fútbol por 50 €/mes, con promo exclusiva a 30 € hasta finales de agosto." },
+            { who: "client", text: "Mándamelo al email." },
+            { who: "agent", text: "Perfecto, te envío el resumen de lo que pagas ahora y cómo quedaría con la promo." }
+          ],
+          learn: "Buen caso para medir ratio de follow-up efectivo y claridad del resumen."
+        },
+        {
+          status: "human",
+          title: "Baja de internet tras disputa de factura",
+          meta: ["Baja", "7:58", "Paso a humano"],
+          outcomeValue: "Paso a humano",
+          outcomeLabel: "Escalado con contexto",
+          summary: "La IA contiene, explica y prepara el salto, pero la gestión final requiere agente humano.",
+          messages: [
+            { who: "client", text: "No estoy de acuerdo con la factura y quiero darme de baja de internet." },
+            { who: "agent", text: "Puedo dejar revisado el cargo y resumir la conversación para que no tengas que repetirlo." },
+            { who: "client", text: "Pásame directamente con una persona." },
+            { who: "agent", text: "Te paso con un agente humano con el detalle de la factura, la reclamación y tu intención de baja ya trasladados." }
+          ],
+          learn: "Medir calidad del resumen y repetición de información en la transferencia."
+        },
+        {
+          status: "human",
+          title: "Reclamación económica persistente",
+          meta: ["Reclamación", "6:51", "Conflicto"],
+          outcomeValue: "Paso a humano",
+          outcomeLabel: "Negociación necesaria",
+          summary: "El cliente no cuestiona el dato sino la legitimidad del cobro y necesita negociación humana.",
+          messages: [
+            { who: "client", text: "No me sirve la explicación, quiero que me quitéis ese cargo." },
+            { who: "agent", text: "Puedo dejar iniciada la revisión y anotar que no aceptas la justificación del cobro." },
+            { who: "client", text: "No, quiero discutirlo con alguien." },
+            { who: "agent", text: "Te paso con una persona y le traslado que se trata de una reclamación económica abierta con desacuerdo expreso." }
+          ],
+          learn: "Caso muy útil para separar bien desacuerdo, reclamación y negociación."
+        },
+        {
+          status: "human",
+          title: "Portabilidad y permanencia compleja",
+          meta: ["Portabilidad", "5:46", "Política"],
+          outcomeValue: "Paso a humano",
+          outcomeLabel: "Derivación deliberada",
+          summary: "La IA entiende el motivo, pero la operativa y el riesgo comercial hacen recomendable el escalado.",
+          messages: [
+            { who: "client", text: "Quiero irme a otro operador y necesito revisar permanencia y condiciones." },
+            { who: "agent", text: "Puedo orientarte sobre tu situación actual, pero este tipo de gestión requiere un especialista para revisar todo el contrato." },
+            { who: "client", text: "Vale, pásame." },
+            { who: "agent", text: "Te derivo con el contexto ya preparado: motivo de portabilidad y consulta de permanencia." }
+          ],
+          learn: "Aquí el valor está en entender bien la intención y dirigir rápido al equipo adecuado."
+        },
+        {
+          status: "human",
+          title: "Avería con alta carga emocional",
+          meta: ["Averías", "8:24", "Escalado"],
+          outcomeValue: "Paso a humano",
+          outcomeLabel: "Contención emocional",
+          summary: "Aunque la IA dispone de parte del contexto, la conversación exige empatía reforzada y acompañamiento humano.",
+          messages: [
+            { who: "client", text: "Llevo dos días sin línea y estoy harto, nadie me da una solución." },
+            { who: "agent", text: "Veo la incidencia abierta y entiendo la urgencia. Puedo resumir todo lo ocurrido para que el siguiente agente continúe sin hacerte repetirlo." },
+            { who: "client", text: "Sí, por favor." },
+            { who: "agent", text: "Te paso con prioridad y con el historial de la avería ya trasladado." }
+          ],
+          learn: "El indicador clave aquí no es solo resolución, sino contención y calidad del handoff."
+        }
+      ],
+      roadmap: [
+        {
+          priority: "Impacto inmediato",
+          owner: "Routing / CRM",
+          title: "Derivación a humano con resumen estructurado y motivo de handoff.",
+          copy: "Reducir repetición de información y mejorar la experiencia en bajas, reclamaciones y averías complejas. Es probablemente la mejora con más retorno corto sin esperar nuevas tools.",
+          impact: "Alta",
+          effort: "Media",
+          eta: "2 sprints",
+          color: "#ff6b5a"
+        },
+        {
+          priority: "Alto valor",
+          owner: "Tools comerciales",
+          title: "Cerrar Segunda Fibra y promociones con confirmación robusta.",
+          copy: "La IA ya genera interés, pero no siempre sabe cerrar sin inventar. Hace falta endurecer coberturas, condiciones y trazabilidad del consentimiento.",
+          impact: "Alta",
+          effort: "Alta",
+          eta: "3 sprints",
+          color: "#ffbe55"
+        },
+        {
+          priority: "Quick win",
+          owner: "Conversational design",
+          title: "Reescribir averías y factura en lenguaje cliente.",
+          copy: "No basta con exponer estados internos. Conviene explicar causa probable, próximo paso y qué puede hacer el cliente ahora, con menos jerga operativa.",
+          impact: "Media",
+          effort: "Baja",
+          eta: "1 sprint",
+          color: "#12b8d6"
+        },
+        {
+          priority: "QA",
+          owner: "Observabilidad",
+          title: "Alarmado por alucinación comercial y respuestas sin grounding.",
+          copy: "Detectar conversaciones donde la IA promete contrataciones, condiciones o coberturas que no puede garantizar con los datos actuales.",
+          impact: "Alta",
+          effort: "Media",
+          eta: "2 sprints",
+          color: "#0f8d94"
+        },
+        {
+          priority: "Revenue",
+          owner: "Next best action",
+          title: "Separar resolución de oferta y medir el momento óptimo de venta.",
+          copy: "El dashboard sugiere que las mejores conversiones llegan cuando primero se resuelve la duda y luego se propone la oferta adecuada.",
+          impact: "Media",
+          effort: "Media",
+          eta: "2 sprints",
+          color: "#22c38e"
+        },
+        {
+          priority: "Analítica",
+          owner: "Data / BI",
+          title: "Unificar conversación, tool trace y resultado comercial en una sola capa.",
+          copy: "Es la base para medir de verdad resolución, NPS, costes, handoff, ventas y fallos por caso de uso sin depender de fuentes separadas.",
+          impact: "Muy alta",
+          effort: "Alta",
+          eta: "4 sprints",
+          color: "#0a4edb"
+        }
+      ]
+    };
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat("es-ES").format(value);
+    }
+
+    function hexToRgba(hex, alpha) {
+      const clean = hex.replace("#", "");
+      const size = clean.length === 3 ? 1 : 2;
+      const values = clean.length === 3
+        ? clean.split("").map((char) => parseInt(char + char, 16))
+        : [clean.slice(0, 2), clean.slice(2, 4), clean.slice(4, 6)].map((part) => parseInt(part, 16));
+      return `rgba(${values[0]}, ${values[1]}, ${values[2]}, ${alpha})`;
+    }
+
+    function heatClass(score) {
+      if (score < 25) return "h0";
+      if (score < 45) return "h1";
+      if (score < 65) return "h2";
+      if (score < 82) return "h3";
+      return "h4";
+    }
+
+    const conversationFilterLabels = {
+      resolved: "Resueltas",
+      hybrid: "Híbridas",
+      human: "Paso a humano"
+    };
+
+    let currentConversationFilter = "resolved";
+
+    function renderKpis() {
+      const root = document.getElementById("mainKpis");
+      if (!root) return;
+      root.innerHTML = dashboardData.kpis.map((kpi) => `
+        <article class="kpi" style="--accent:${kpi.accent}">
+          <div class="kpi-value">${kpi.value}</div>
+          <div class="kpi-label">${kpi.label}</div>
+          <div class="kpi-sub">${kpi.sub}</div>
+        </article>
+      `).join("");
+    }
+
+    function renderSankey() {
+      const root = document.getElementById("sankeyChart");
+      const width = 1060;
+      const height = 500;
+      const nodeWidth = 240;
+      const gap = 12;
+      const top = 30;
+      const bottom = 14;
+      const total = Math.max(...dashboardData.flow.stages.map((stage) => stage.reduce((sum, node) => sum + node.value, 0)));
+      const scale = (height - top - bottom - gap * 3) / total;
+      const xPositions = [20, 430, 820];
+      const nodeMap = {};
+
+      const labelTspans = (label, x, y) => {
+        const words = label.split(" ");
+        if (words.length <= 2) {
+          return `<text x="${x}" y="${y}" fill="#fff" font-size="14" font-weight="800">${label}</text>`;
+        }
+        const middle = Math.ceil(words.length / 2);
+        const first = words.slice(0, middle).join(" ");
+        const second = words.slice(middle).join(" ");
+        return `
+          <text x="${x}" y="${y}" fill="#fff" font-size="14" font-weight="800">
+            <tspan x="${x}" dy="0">${first}</tspan>
+            <tspan x="${x}" dy="16">${second}</tspan>
+          </text>
+        `;
+      };
+
+      dashboardData.flow.stages.forEach((stage, stageIndex) => {
+        let y = top;
+        stage.forEach((node) => {
+          const h = Math.max(node.value * scale, 52);
+          nodeMap[node.id] = { ...node, x: xPositions[stageIndex], y, h, out: 0, in: 0 };
+          y += h + gap;
+        });
+      });
+
+      const linkPaths = dashboardData.flow.links.map((link) => {
+        const source = nodeMap[link.source];
+        const target = nodeMap[link.target];
+        const thickness = Math.max(link.value * scale, 8);
+        const y1 = source.y + source.out + thickness / 2;
+        const y2 = target.y + target.in + thickness / 2;
+        source.out += thickness;
+        target.in += thickness;
+        const x1 = source.x + nodeWidth;
+        const x2 = target.x;
+        const cx1 = x1 + 80;
+        const cx2 = x2 - 80;
+        const d = `M ${x1} ${y1} C ${cx1} ${y1}, ${cx2} ${y2}, ${x2} ${y2}`;
+        return `<path d="${d}" fill="none" stroke="${hexToRgba(link.color, .36)}" stroke-width="${thickness}" stroke-linecap="round"></path>`;
+      }).join("");
+
+      const nodes = Object.values(nodeMap).map((node) => {
+        const compact = node.h < 82;
+        const labelMarkup = compact
+          ? `<text x="${node.x + 18}" y="${node.y + 22}" fill="#fff" font-size="13" font-weight="800">${node.label}</text>`
+          : labelTspans(node.label, node.x + 18, node.y + 28);
+        const valueY = compact ? node.y + 42 : node.y + 82;
+        const valueSize = compact ? 20 : 32;
+        return `
+          <g>
+            <rect x="${node.x}" y="${node.y}" rx="18" ry="18" width="${nodeWidth}" height="${node.h}" fill="${node.color}" opacity="${node.id === "outscope" ? 0.9 : 1}"></rect>
+            ${labelMarkup}
+            <text x="${node.x + 18}" y="${valueY}" fill="rgba(255,255,255,.88)" font-size="${valueSize}" font-weight="850">${formatNumber(node.value)}</text>
+          </g>
+        `;
+      }).join("");
+
+      const stageLabels = ["Entrada", "Perímetro", "Resultado"].map((label, index) => `
+        <text x="${xPositions[index]}" y="14" fill="#5d6f89" font-size="14" font-weight="850" letter-spacing="2.4">${label.toUpperCase()}</text>
+      `).join("");
+
+      root.innerHTML = `
+        <svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}" role="img" aria-label="Flujo de llamadas">
+          ${stageLabels}
+          ${linkPaths}
+          ${nodes}
+        </svg>
+      `;
+    }
+
+    function renderVoiceSummary() {
+      const root = document.getElementById("voiceSummary");
+      const bars = dashboardData.voice.bars.map((bar) => `
+        <div class="stacked-row">
+          <div class="stacked-top">
+            <span class="stacked-name">${bar.name}</span>
+            <span class="stacked-val">${bar.value}%</span>
+          </div>
+          <div class="stacked-track">
+            <div class="stacked-fill" style="width:${bar.value}%; background:${bar.color}"></div>
+          </div>
+        </div>
+      `).join("");
+
+      const signals = dashboardData.voice.signals.map((signal) => `
+        <div class="signal-card">
+          <strong>${signal.value}</strong>
+          <span>${signal.label}</span>
+        </div>
+      `).join("");
+
+      root.innerHTML = `
+        <div class="voice-score is-compact">
+          <p></p>
+          <div class="voice-score-value">${dashboardData.voice.nps}</div>
+        </div>
+        <div class="stacked-bars">${bars}</div>
+        <div class="signal-grid">${signals}</div>
+      `;
+    }
+
+    function renderUseCases() {
+      const root = document.getElementById("useCaseList");
+      root.innerHTML = dashboardData.useCases.map((item) => `
+        <div class="usecase-card">
+          <div class="usecase-top">
+            <div>
+              <div class="usecase-name">${item.name}</div>
+              <div class="usecase-meta">${item.family} · ${formatNumber(item.volume)} llamadas · Dolor dominante: ${item.pain}</div>
+            </div>
+            <div class="usecase-resolution">
+              <strong>${item.resolution}%</strong>
+              <span>Resolución IA</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-chip"><b>${item.handoff}%</b><span>Paso a humano</span></div>
+            <div class="metric-chip"><b>${item.nps > 0 ? "+" : ""}${item.nps}</b><span>NPS</span></div>
+            <div class="metric-chip"><b>${item.repeat}%</b><span>Recontacto</span></div>
+            <div class="metric-chip"><b>${item.coverage}%</b><span>Sentimiento</span></div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-item">
+              <div class="bar-head"><span>Entendimiento IA</span><strong>${item.confidence}%</strong></div>
+              <div class="bar-track"><div class="bar-fill" style="width:${item.confidence}%; --bar:#0a4edb"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-head"><span>TMO medio</span><strong>${item.avgHandle}</strong></div>
+              <div class="bar-track"><div class="bar-fill" style="width:${Math.min(item.volume / 30, 100)}%; --bar:#12b8d6"></div></div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderHeatmap() {
+      const root = document.getElementById("heatmap");
+      const metrics = dashboardData.heatmap.rows;
+      const capacities = dashboardData.heatmap.columns;
+      const head = `
+        <div class="heat-head-row">
+          <div class="heat-head">Capacidad</div>
+          ${metrics.map((metric) => `<div class="heat-head">${metric.label}</div>`).join("")}
+        </div>
+      `;
+      const rows = capacities.map((capacity, capacityIndex) => `
+        <div class="heat-row">
+          <div class="heat-label">${capacity}</div>
+          ${metrics.map((metric) => {
+            const value = metric.values[capacityIndex];
+            const sourceQuality = metric.qualityValues ? metric.qualityValues[capacityIndex] : value;
+            const quality = metric.invert ? 100 - sourceQuality : sourceQuality;
+            return `<div class="heat-cell ${heatClass(quality)}" data-metric="${metric.label}"><div>${value}${metric.suffix}</div><small>${quality >= 70 ? "fortaleza" : quality >= 45 ? "vigilar" : "fricción"}</small></div>`;
+          }).join("")}
+        </div>
+      `).join("");
+      root.innerHTML = head + rows;
+    }
+
+    function renderRadar() {
+      const svg = document.getElementById("radarChart");
+      const points = dashboardData.radar;
+      const cx = 210;
+      const cy = 170;
+      const radius = 110;
+      const rings = [25, 50, 75, 100];
+      const axis = points.map((point, index) => {
+        const angle = (-Math.PI / 2) + (index * Math.PI * 2 / points.length);
+        const x = cx + Math.cos(angle) * radius;
+        const y = cy + Math.sin(angle) * radius;
+        const lx = cx + Math.cos(angle) * (radius + 28);
+        const ly = cy + Math.sin(angle) * (radius + 28);
+        return {
+          angle,
+          x,
+          y,
+          lx,
+          ly,
+          valueX: cx + Math.cos(angle) * (radius * (point.value / 100)),
+          valueY: cy + Math.sin(angle) * (radius * (point.value / 100)),
+          label: point.label,
+          value: point.value
+        };
+      });
+
+      const ringsMarkup = rings.map((ring) => {
+        const ringPoints = axis.map((item) => {
+          const ringRadius = radius * (ring / 100);
+          const x = cx + Math.cos(item.angle) * ringRadius;
+          const y = cy + Math.sin(item.angle) * ringRadius;
+          return `${x},${y}`;
+        }).join(" ");
+        return `<polygon points="${ringPoints}" fill="none" stroke="${ring === 100 ? "#bfd8fb" : "#d7e8ff"}" stroke-width="1"></polygon>`;
+      }).join("");
+
+      const axisMarkup = axis.map((item) => `
+        <g>
+          <line x1="${cx}" y1="${cy}" x2="${item.x}" y2="${item.y}" stroke="#d7e8ff" stroke-width="1"></line>
+          <text x="${item.lx}" y="${item.ly}" fill="#5d6f89" font-size="12" font-weight="760" text-anchor="middle">${item.label}</text>
+        </g>
+      `).join("");
+
+      const dataPoints = axis.map((item) => `${item.valueX},${item.valueY}`).join(" ");
+      const dots = axis.map((item) => `
+        <g>
+          <circle cx="${item.valueX}" cy="${item.valueY}" r="5" fill="#0a4edb"></circle>
+          <text x="${item.valueX}" y="${item.valueY - 12}" fill="#0a4edb" font-size="11" font-weight="820" text-anchor="middle">${item.value}</text>
+        </g>
+      `).join("");
+
+      svg.innerHTML = `
+        ${ringsMarkup}
+        ${axisMarkup}
+        <polygon points="${dataPoints}" fill="${hexToRgba("#12b8d6", .18)}" stroke="#0a4edb" stroke-width="3"></polygon>
+        ${dots}
+      `;
+    }
+
+    function renderTools() {
+      const root = document.getElementById("toolLanes");
+      root.innerHTML = dashboardData.tools.map((tool) => `
+        <div class="tool-card">
+          <div class="tool-top">
+            <div>
+              <div class="tool-name">${tool.name}</div>
+              <div class="tool-note">${tool.note}</div>
+            </div>
+            <div class="tool-score">${tool.score}</div>
+          </div>
+          <div class="tool-metrics">
+            <span>Latencia ${tool.latency}</span>
+            <span>Fallos ${tool.failure}</span>
+            <span>Calidad ${tool.score}/100</span>
+          </div>
+          <div class="tool-progress"><b style="width:${tool.score}%"></b></div>
+        </div>
+      `).join("");
+    }
+
+    function renderTransferDrivers() {
+      const root = document.getElementById("transferDrivers");
+      root.innerHTML = dashboardData.transferDrivers.map((item) => `
+        <div class="driver-card">
+          <div class="driver-top">
+            <div class="driver-name">${item.name}</div>
+            <div class="driver-pct">${item.pct}%</div>
+          </div>
+          <div class="driver-copy">${item.copy}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderWords() {
+      const root = document.getElementById("wordCloud");
+      root.innerHTML = `
+        <svg class="word-cloud-tree" viewBox="0 0 1200 520" aria-hidden="true">
+          <defs>
+            <linearGradient id="treeStroke" x1="126" y1="380" x2="1018" y2="138" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#0a4edb" stop-opacity=".18"/>
+              <stop offset=".45" stop-color="#12b8d6" stop-opacity=".32"/>
+              <stop offset="1" stop-color="#22c38e" stop-opacity=".20"/>
+            </linearGradient>
+          </defs>
+          <path d="M600 450C600 408 600 386 600 340C600 296 544 272 470 248C392 223 344 198 344 150" fill="none" stroke="url(#treeStroke)" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M600 340C600 298 656 274 732 248C820 218 878 192 878 138" fill="none" stroke="url(#treeStroke)" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M470 248C470 222 432 206 384 194C338 184 292 170 260 146" fill="none" stroke="url(#treeStroke)" stroke-width="3.6" stroke-linecap="round"/>
+          <path d="M470 248C470 220 504 206 544 194C596 180 642 164 676 136" fill="none" stroke="url(#treeStroke)" stroke-width="3.6" stroke-linecap="round"/>
+          <path d="M732 248C732 220 782 200 832 182C892 160 950 140 992 104" fill="none" stroke="url(#treeStroke)" stroke-width="3.6" stroke-linecap="round"/>
+          <circle cx="600" cy="450" r="14" fill="#0a4edb" fill-opacity=".16" stroke="#0a4edb" stroke-opacity=".24"/>
+          <circle cx="600" cy="340" r="12" fill="#12b8d6" fill-opacity=".18" stroke="#12b8d6" stroke-opacity=".24"/>
+          <circle cx="470" cy="248" r="11" fill="#0f8d94" fill-opacity=".14" stroke="#0f8d94" stroke-opacity=".22"/>
+          <circle cx="732" cy="248" r="11" fill="#22c38e" fill-opacity=".14" stroke="#22c38e" stroke-opacity=".22"/>
+          <circle cx="344" cy="150" r="10" fill="#ffbe55" fill-opacity=".14" stroke="#ffbe55" stroke-opacity=".26"/>
+          <circle cx="878" cy="138" r="10" fill="#ff6b5a" fill-opacity=".12" stroke="#ff6b5a" stroke-opacity=".22"/>
+          <circle cx="260" cy="146" r="9" fill="#0a4edb" fill-opacity=".14" stroke="#0a4edb" stroke-opacity=".22"/>
+          <circle cx="676" cy="136" r="9" fill="#12b8d6" fill-opacity=".14" stroke="#12b8d6" stroke-opacity=".22"/>
+          <circle cx="992" cy="104" r="9" fill="#22c38e" fill-opacity=".14" stroke="#22c38e" stroke-opacity=".22"/>
+        </svg>
+        <span class="word-cloud-stage" style="left:48%; top:84%;">Saludo</span>
+        <span class="word-cloud-stage" style="left:48%; top:61%;">Intención</span>
+        <span class="word-cloud-stage" style="left:35%; top:43%;">Consulta</span>
+        <span class="word-cloud-stage" style="left:66%; top:43%;">Resolución</span>
+        <span class="word-cloud-stage" style="left:78%; top:20%;">Humano</span>
+        ${dashboardData.words.map((word) => `
+        <span
+          class="word"
+          style="
+            left:${word.x}%;
+            top:${word.y}%;
+            font-size:${word.size}px;
+            --word-color:${word.color};
+            --rotate:${word.rotate}deg;
+          "
+        >${word.text}</span>
+      `).join("")}
+      `;
+    }
+
+    function renderInsights() {
+      const root = document.getElementById("insightBoard");
+      root.innerHTML = dashboardData.insights.map((item) => `
+        <div class="insight-card">
+          <div class="insight-label">${item.label}</div>
+          <div class="insight-title">${item.title}</div>
+          <div class="insight-copy">${item.copy}</div>
+          <div class="insight-foot">
+            ${item.tags.map((tag) => `<span>${tag}</span>`).join("")}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderCommercial() {
+      const oppRoot = document.getElementById("opportunityList");
+      if (!oppRoot) return;
+      oppRoot.innerHTML = dashboardData.commercial.opportunities.map((opp) => `
+        <div class="opportunity-card">
+          <div class="opportunity-top">
+            <div>
+              <div class="opportunity-name">${opp.name}</div>
+              <div class="opportunity-copy">${opp.copy}</div>
+            </div>
+            ${opp.value ? `<div class="opportunity-value">${opp.value}</div>` : ``}
+          </div>
+          <div class="opportunity-grid">
+            ${opp.chips.map((chip) => `
+              <div class="opportunity-chip">
+                <strong>${chip.value}</strong>
+                <span>${chip.label}</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderConversations() {
+      const filtersRoot = document.getElementById("conversationFilters");
+      const root = document.getElementById("conversationGrid");
+      const paginationRoot = document.getElementById("conversationPagination");
+      const filtered = dashboardData.conversations.filter((item) => item.status === currentConversationFilter);
+
+      filtersRoot.innerHTML = Object.entries(conversationFilterLabels).map(([key, label]) => `
+        <button class="filter-chip ${currentConversationFilter === key ? "active" : ""}" data-filter="${key}">${label}</button>
+      `).join("");
+
+      root.innerHTML = filtered.map((item) => `
+        <article class="conversation-card">
+          <div class="conversation-head">
+            <div>
+              <div class="conversation-title">${item.title}</div>
+              <div class="conversation-meta">
+                ${item.meta.map((meta) => `<span class="meta-pill">${meta}</span>`).join("")}
+              </div>
+            </div>
+            <div class="conversation-outcome">
+              <strong>${item.outcomeValue}</strong>
+              <span>${item.outcomeLabel}</span>
+            </div>
+          </div>
+          <div class="conversation-summary">${item.summary}</div>
+          <div class="transcript">
+            ${item.messages.map((message) => `
+              <div class="bubble ${message.who}">${message.text}</div>
+            `).join("")}
+          </div>
+          <div class="conversation-foot">
+            <strong>Qué conviene aprender de este caso</strong>
+            <p>${item.learn}</p>
+          </div>
+        </article>
+      `).join("");
+
+      paginationRoot.innerHTML = `
+        <span class="page-pill active">Página 1</span>
+        <span class="page-pill">2</span>
+        <span class="page-pill">3</span>
+        <span class="page-pill">...</span>
+        <span class="page-pill">Página 34</span>
+      `;
+
+      filtersRoot.querySelectorAll(".filter-chip").forEach((button) => {
+        button.addEventListener("click", () => {
+          currentConversationFilter = button.dataset.filter;
+          renderConversations();
+        });
+      });
+    }
+
+    function renderRoadmap() {
+      const root = document.getElementById("roadmapGrid");
+      root.innerHTML = dashboardData.roadmap.map((item) => `
+        <article class="roadmap-card" style="--priority:${item.color}">
+          <div class="roadmap-top">
+            <span class="roadmap-badge">${item.priority}</span>
+            <span class="roadmap-owner">${item.owner}</span>
+          </div>
+          <div class="roadmap-title">${item.title}</div>
+          <div class="roadmap-copy">${item.copy}</div>
+          <div class="roadmap-metrics">
+            <div class="roadmap-metric"><strong>${item.impact}</strong><span>Impacto</span></div>
+            <div class="roadmap-metric"><strong>${item.effort}</strong><span>Esfuerzo</span></div>
+            <div class="roadmap-metric"><strong>${item.eta}</strong><span>Horizonte</span></div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function init() {
+      renderKpis();
+      renderSankey();
+      renderVoiceSummary();
+      renderUseCases();
+      renderHeatmap();
+      renderRadar();
+      renderTools();
+      renderTransferDrivers();
+      renderWords();
+      renderInsights();
+      renderCommercial();
+      renderConversations();
+    }
+
+    init();
+  </script>
+</body>
+</html>
