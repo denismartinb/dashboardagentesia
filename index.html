@@ -560,27 +560,32 @@
   var CHECK = '<path d="M5 13l4 4L19 7"/>';
   var SCALE = '<path d="M6.5 6.5 4 4M17.5 6.5 20 4M6.5 17.5 4 20M17.5 17.5 20 20"/><rect x="7" y="7" width="10" height="10"/>';
   var FLASH = '<path d="M6.4 17.6 17.6 6.4M4.9 8.3 2 5.4l2.5-2.5 2.9 2.9M19.1 15.7l2.9 2.9L19.5 21l-2.9-2.9M2.9 12.1 5.7 9.3M11.9 21.1l2.8-2.8M15.5 8.5l-7 7"/>';
+  var HEART = '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8Z"/>';
 
   var CELEBRATIONS = {
     peso10: {
-      kind: 'peso', icon: SCALE, eyebrow: 'CONSTANCIA',
+      kind: 'peso', icon: SCALE, eyebrow: 'CONSTANCIA', title: '¡Enhorabuena!',
       body: 'Has alcanzado <b>10 registros</b> de tu peso. A veces los resultados tardan en llegar, pero la constancia es la clave. Sigue controlando la dieta, el ejercicio y registrando avances en <b>Vamos, Raquel</b> — ¡pronto verás bajar la báscula!'
     },
     sesion1: {
-      kind: 'pierna', icon: TROPHY, eyebrow: 'PRIMER PASO',
+      kind: 'pierna', icon: TROPHY, eyebrow: 'PRIMER PASO', title: '¡Enhorabuena!',
       body: 'Has completado tu <b>primera sesión</b> de entrenamiento. Este es un primer paso muy importante para conseguir el objetivo.'
     },
     sesion5: {
-      kind: 'pierna', icon: FLASH, eyebrow: 'A MITAD DE CAMINO',
+      kind: 'pierna', icon: FLASH, eyebrow: 'A MITAD DE CAMINO', title: '¡Enhorabuena!',
       body: 'Ya estás a mitad de camino para conseguir tu premio.<br><b>¡Sigue así!!</b>'
     },
     peso599: {
-      kind: 'peso', icon: SCALE, eyebrow: 'SE MUEVE LA BÁSCULA',
+      kind: 'peso', icon: SCALE, eyebrow: 'SE MUEVE LA BÁSCULA', title: '¡Enhorabuena!',
       body: 'Ha costado ver moverse la báscula, pero a partir de ahora va a ser <b>coser y cantar</b>.'
     },
     peso595: {
-      kind: 'peso', icon: TROPHY, eyebrow: 'COGE FORMA',
+      kind: 'peso', icon: TROPHY, eyebrow: 'COGE FORMA', title: '¡Enhorabuena!',
       body: 'Esto empieza a coger forma. Sigue apretando y en pocos días tendrás un <b>premio</b> en tus manos.'
+    },
+    hospital0908: {
+      kind: 'peso', icon: HEART, eyebrow: 'ÁNIMO, RAQUEL', title: '¡Buenos días!', confetti: false,
+      body: 'Hoy es un día muy importante: vais a ir al hospital y todo va a salir muy bien.<br><br>Y a la salida, podréis desayunar o comer fuera, como a ti te gusta.<br><br>Descuida, esto no te aleja de tus premios 🙂'
     }
   };
 
@@ -926,6 +931,7 @@
   var celebrateCard = document.getElementById('celebrate-card');
   var celebrateIcon = document.getElementById('celebrate-icon');
   var celebrateEyebrow = document.getElementById('celebrate-eyebrow');
+  var celebrateTitle = document.getElementById('celebrate-title');
   var celebrateBody = document.getElementById('celebrate-body');
   var celebrationQueue = [];
   var celebrating = false;
@@ -944,9 +950,10 @@
     celebrateCard.className = 'celebrate-card ' + c.kind;
     celebrateIcon.innerHTML = c.icon;
     celebrateEyebrow.textContent = c.eyebrow;
+    celebrateTitle.textContent = c.title || '¡Enhorabuena!';
     celebrateBody.innerHTML = c.body;
     celebrateBackdrop.classList.add('show');
-    burstConfetti(c.kind);
+    if (c.confetti !== false) { burstConfetti(c.kind); }
   }
 
   document.getElementById('celebrate-close').addEventListener('click', function () {
@@ -961,19 +968,27 @@
   var weightCountSeen = null;
   var weightValueSeen = null;
   var sessionCountSeen = null;
+  var hospitalDateSeen = null;
+  var HOSPITAL_DATE = '2026-09-08';
 
   function checkWeightMilestones(weights) {
     var count = weights.length;
     var current = count ? weights[weights.length - 1].kg : null;
-    if (weightCountSeen === null) { weightCountSeen = count; weightValueSeen = current; return; }
+    var hasHospitalEntry = weights.some(function (w) { return w.fecha === HOSPITAL_DATE; });
+    if (weightCountSeen === null) {
+      weightCountSeen = count; weightValueSeen = current; hospitalDateSeen = hasHospitalEntry;
+      return;
+    }
     if (weightCountSeen < 10 && count >= 10) { celebrate('peso10'); }
     if (current !== null) {
       var prev = weightValueSeen;
       if ((prev === null || prev >= START_WEIGHT) && current < START_WEIGHT) { celebrate('peso599'); }
       if ((prev === null || prev > 59.5) && current <= 59.5) { celebrate('peso595'); }
     }
+    if (!hospitalDateSeen && hasHospitalEntry) { celebrate('hospital0908'); }
     weightCountSeen = count;
     weightValueSeen = current;
+    hospitalDateSeen = hasHospitalEntry;
   }
 
   function checkSessionMilestones(sessions) {
