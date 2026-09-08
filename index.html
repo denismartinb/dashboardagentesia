@@ -158,6 +158,13 @@
   .callout .an { font-size: 23px; line-height: 1.05; color: var(--text); }
   .callout-sub { font-size: 11.5px; font-weight: 600; color: var(--text-muted); }
 
+  .streak-stepper { display: flex; align-items: center; margin: 3px 0 1px; }
+  .streak-stepper[hidden] { display: none; }
+  .streak-stepper .node { width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--locked); background: var(--surface-2); flex-shrink: 0; transition: all .35s ease; }
+  .streak-stepper .seg { width: 22px; height: 2px; background: var(--locked); transition: background .35s ease; }
+  .card.peso .streak-stepper .node.on { border-color: var(--lime); background: var(--lime); box-shadow: 0 0 8px rgba(198,255,58,.8); }
+  .card.peso .streak-stepper .seg.on { background: var(--lime); }
+
   .bar-label { display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: .03em; }
   .bar-track { width: 100%; height: 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 2px; transition: width .4s ease; }
@@ -221,12 +228,24 @@
   .ruta-label { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--text-faint); }
   .ruta-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
   .premio-card {
+    position: relative; overflow: hidden;
     display: flex; flex-direction: column; align-items: center; gap: 8px;
     padding: 14px 6px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2);
   }
   .premio-card .icon-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #262924; }
   .premio-card .an { font-size: 17px; color: var(--text); }
   .premio-tag { font-size: 9.5px; font-weight: 800; letter-spacing: .06em; padding: 3px 7px; border-radius: 20px; }
+  .premio-card.consolidando { border-width: 2px; border-color: var(--lime); box-shadow: 0 0 0 3px rgba(198,255,58,.12); }
+  .premio-card.consolidando .icon-circle svg { color: var(--lime); }
+  .premio-card.consolidando .premio-tag { background: var(--lime); color: var(--lime-ink); }
+  .veil {
+    position: absolute; left: 0; right: 0; top: 0;
+    background: linear-gradient(180deg, #2a2d26 0%, #1f221c 100%);
+    transition: height .6s cubic-bezier(.3,.9,.3,1);
+  }
+  .veil::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 6px, rgba(0,0,0,.05) 6px 12px); }
+  .veil-hem { position: absolute; left: 0; right: 0; bottom: 0; height: 10px; background: linear-gradient(180deg, rgba(198,255,58,0) 0%, rgba(198,255,58,.35) 100%); border-bottom: 1.5px dashed rgba(198,255,58,.55); }
+
   .premio-card.next { border-width: 2px; }
   .premio-card.next.peso { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(198,255,58,.12); }
   .premio-card.next.pierna { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(255,122,69,.12); }
@@ -372,10 +391,13 @@
         <span class="delta" id="weight-delta">—</span>
       </div>
       <div class="callout">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a3 3 0 0 0 3 5"/><path d="M17 5h3a3 3 0 0 1-3 5"/></svg>
+        <svg id="weight-callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a3 3 0 0 0 3 5"/><path d="M17 5h3a3 3 0 0 1-3 5"/></svg>
         <div class="callout-text">
           <span class="callout-eyebrow" id="weight-callout-eyebrow">TU PRÓXIMO PREMIO ESTÁ CERCA</span>
           <span class="an" id="weight-callout-main">—</span>
+          <div class="streak-stepper" id="weight-stepper" hidden>
+            <span class="node"></span><span class="seg"></span><span class="node"></span><span class="seg"></span><span class="node"></span>
+          </div>
           <span class="callout-sub" id="weight-callout-sub">—</span>
         </div>
       </div>
@@ -554,12 +576,14 @@
   var START_WEIGHT = 59.9;
   var WEIGHT_MILESTONES = [59, 58.5, 58];
   var SESSION_MILESTONES = [10, 15, 20];
+  var CONSOLIDATION_TARGET = 3;
 
   var TROPHY = '<path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a3 3 0 0 0 3 5"/><path d="M17 5h3a3 3 0 0 1-3 5"/>';
   var LOCK = '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>';
   var CHECK = '<path d="M5 13l4 4L19 7"/>';
   var SCALE = '<path d="M6.5 6.5 4 4M17.5 6.5 20 4M6.5 17.5 4 20M17.5 17.5 20 20"/><rect x="7" y="7" width="10" height="10"/>';
   var FLASH = '<path d="M6.4 17.6 17.6 6.4M4.9 8.3 2 5.4l2.5-2.5 2.9 2.9M19.1 15.7l2.9 2.9L19.5 21l-2.9-2.9M2.9 12.1 5.7 9.3M11.9 21.1l2.8-2.8M15.5 8.5l-7 7"/>';
+  var FLAME = '<path d="M12 22c4.5 0 7-2.7 7-6.5C19 11 15 8 15 4c-2.5 2-4 4.7-4 7.3C9.5 9.8 9 8 9 6c-2.3 2.5-4 5.8-4 9.2C5 19.2 7.6 22 12 22Z"/><path d="M12 22c1.8 0 3-1.3 3-3.2 0-1.7-1-2.9-1.8-4-.4 1.2-1 2-1.2 3-.4-1-1-1.6-1-2.6C9.5 16.4 9 17.7 9 19c0 1.8 1.3 3 3 3Z"/>';
   var HEART = '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8Z"/>';
 
   var CELEBRATIONS = {
@@ -586,8 +610,22 @@
     hospital0908: {
       kind: 'peso', icon: HEART, eyebrow: 'ÁNIMO, RAQUEL', title: '¡Buenos días!', confetti: false,
       body: 'Hoy es un día muy importante: vais a ir al hospital y todo va a salir muy bien.<br><br>Y a la salida, podréis desayunar o comer fuera, como a ti te gusta.<br><br>Descuida, esto no te aleja de tus premios 🙂'
+    },
+    premio59: {
+      kind: 'peso', icon: TROPHY, eyebrow: 'PREMIO DESBLOQUEADO', title: '¡Premio tuyo!',
+      body: 'Has confirmado los <b>59 kg</b> tres registros seguidos. Ya no es casualidad: el peso está consolidado y el <b>primer premio es tuyo</b>. Ve a reclamarlo 😉'
+    },
+    premio58_5: {
+      kind: 'peso', icon: TROPHY, eyebrow: 'PREMIO DESBLOQUEADO', title: '¡Premio tuyo!',
+      body: 'Tres registros seguidos en <b>58,5 kg</b> o menos. Segundo premio desbloqueado — y ya solo queda medio kilo para la meta final.'
+    },
+    premio58: {
+      kind: 'peso', icon: TROPHY, eyebrow: 'META FINAL CONSEGUIDA', title: '¡Lo lograste!',
+      body: 'Has consolidado los <b>58 kg</b>: el objetivo completo, con los tres premios en tus manos. Esto ya no es una racha, es tu nuevo peso. <b>Enhorabuena, Raquel.</b>'
     }
   };
+
+  function premioKey(m) { return 'premio' + String(m).replace('.', '_'); }
 
   function svg(inner, size) {
     return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>';
@@ -625,15 +663,16 @@
   var editingSessionId = null;
   var chartInstance = null;
 
-  function weightMilestoneState(current) {
-    var reached = [], next = null, locked = [];
-    for (var i = 0; i < WEIGHT_MILESTONES.length; i++) {
-      var m = WEIGHT_MILESTONES[i];
-      if (current <= m) { reached.push(m); }
-      else if (next === null) { next = m; }
-      else { locked.push(m); }
+  // Un premio de peso solo se desbloquea tras CONSOLIDATION_TARGET registros
+  // seguidos en el objetivo o por debajo. Una vez logrado, queda desbloqueado
+  // para siempre aunque el peso vuelva a subir.
+  function weightMilestoneProgress(weights, m) {
+    var best = 0, run = 0;
+    for (var i = 0; i < weights.length; i++) {
+      if (weights[i].kg <= m) { run++; if (run > best) { best = run; } }
+      else { run = 0; }
     }
-    return { reached: reached, next: next, locked: locked };
+    return { unlocked: best >= CONSOLIDATION_TARGET, streak: run, touched: best > 0 };
   }
 
   function sessionMilestoneState(current) {
@@ -647,10 +686,27 @@
     return { reached: reached, next: next, locked: locked };
   }
 
-  function premioCard(kind, value, unit, status) {
-    var icon = status === 'reached' ? CHECK : (status === 'next' ? TROPHY : LOCK);
-    var tag = status === 'reached' ? 'CONSEGUIDO' : (status === 'next' ? 'SIGUIENTE' : 'BLOQUEADO');
-    return '<div class="premio-card ' + status + ' ' + kind + '">' +
+  // Los hijos del stepper alternan nodo/segmento: nodo1, seg1, nodo2, seg2, nodo3.
+  function paintStepper(el, streak) {
+    var kids = el.children;
+    for (var i = 0; i < kids.length; i++) {
+      var isNode = i % 2 === 0;
+      var on = isNode ? (i / 2 + 1) <= streak : ((i + 1) / 2) < streak;
+      kids[i].classList.toggle('on', on);
+    }
+  }
+
+  function premioCard(kind, value, unit, status, streak) {
+    var icon = status === 'reached' ? CHECK : (status === 'consolidando' ? FLAME : (status === 'next' ? TROPHY : LOCK));
+    var tag = status === 'reached' ? 'CONSEGUIDO'
+      : status === 'consolidando' ? 'RACHA ' + streak + '/' + CONSOLIDATION_TARGET
+      : status === 'next' ? 'SIGUIENTE' : 'BLOQUEADO';
+    var veil = '';
+    if (status === 'consolidando') {
+      var pending = Math.max(0, CONSOLIDATION_TARGET - streak) / CONSOLIDATION_TARGET;
+      veil = '<div class="veil" style="height:' + (pending * 100) + '%"><div class="veil-hem"></div></div>';
+    }
+    return '<div class="premio-card ' + status + ' ' + kind + '">' + veil +
       '<div class="icon-circle">' + svg(icon, 18) + '</div>' +
       '<span class="an">' + value + (unit ? ' ' + unit : '') + '</span>' +
       '<span class="premio-tag">' + tag + '</span>' +
@@ -788,27 +844,60 @@
       document.getElementById('weight-value').placeholder = START_WEIGHT.toFixed(1);
     }
 
-    var wState = weightMilestoneState(currentWeight);
-    if (wState.next !== null) {
-      var wPrevBoundary = wState.reached.length ? wState.reached[wState.reached.length - 1] : START_WEIGHT;
-      var wFrac = clamp((wPrevBoundary - currentWeight) / (wPrevBoundary - wState.next), 0, 1);
-      document.getElementById('weight-callout-main').textContent = 'FALTAN ' + (currentWeight - wState.next).toFixed(1) + ' KG';
-      document.getElementById('weight-callout-sub').textContent = 'para llegar a los ' + wState.next + ' kg';
-      document.getElementById('weight-bar-label').textContent = 'Progreso hacia ' + wState.next + ' kg';
-      document.getElementById('weight-bar-pct').textContent = Math.round(wFrac * 100) + '%';
-      document.getElementById('weight-bar-fill').style.width = (wFrac * 100) + '%';
-    } else {
+    var wProgress = WEIGHT_MILESTONES.map(function (m) { return weightMilestoneProgress(weights, m); });
+    var wActive = -1;
+    for (var wi = 0; wi < WEIGHT_MILESTONES.length; wi++) {
+      if (!wProgress[wi].unlocked) { wActive = wi; break; }
+    }
+
+    var calloutIcon = document.getElementById('weight-callout-icon');
+    var calloutMain = document.getElementById('weight-callout-main');
+    var stepper = document.getElementById('weight-stepper');
+
+    if (wActive === -1) {
+      calloutIcon.innerHTML = CHECK;
       document.getElementById('weight-callout-eyebrow').textContent = 'TODAS LAS METAS CONSEGUIDAS';
-      document.getElementById('weight-callout-main').textContent = '¡LO LOGRASTE!';
+      calloutMain.hidden = false;
+      calloutMain.textContent = '¡LO LOGRASTE!';
+      stepper.hidden = true;
       document.getElementById('weight-callout-sub').textContent = 'Las tres metas de peso están cumplidas';
       document.getElementById('weight-bar-label').textContent = 'Progreso hacia 58 kg';
       document.getElementById('weight-bar-pct').textContent = '100%';
       document.getElementById('weight-bar-fill').style.width = '100%';
+    } else if (wProgress[wActive].streak > 0) {
+      var streak = wProgress[wActive].streak;
+      var pending = CONSOLIDATION_TARGET - streak;
+      calloutIcon.innerHTML = FLAME;
+      document.getElementById('weight-callout-eyebrow').textContent = 'CONSOLIDANDO TU RACHA';
+      calloutMain.hidden = true;
+      stepper.hidden = false;
+      paintStepper(stepper, streak);
+      document.getElementById('weight-callout-sub').textContent =
+        'Registra ' + pending + (pending === 1 ? ' vez más' : ' veces más') + ' en ' + WEIGHT_MILESTONES[wActive] + ' kg o menos para desbloquear el premio.';
+      document.getElementById('weight-bar-label').textContent = 'Racha de consolidación';
+      document.getElementById('weight-bar-pct').textContent = streak + '/' + CONSOLIDATION_TARGET;
+      document.getElementById('weight-bar-fill').style.width = (streak / CONSOLIDATION_TARGET * 100) + '%';
+    } else {
+      var target = WEIGHT_MILESTONES[wActive];
+      var wPrevBoundary = wActive === 0 ? START_WEIGHT : WEIGHT_MILESTONES[wActive - 1];
+      var wFrac = clamp((wPrevBoundary - currentWeight) / (wPrevBoundary - target), 0, 1);
+      calloutIcon.innerHTML = TROPHY;
+      document.getElementById('weight-callout-eyebrow').textContent = 'TU PRÓXIMO PREMIO ESTÁ CERCA';
+      calloutMain.hidden = false;
+      calloutMain.textContent = 'FALTAN ' + (currentWeight - target).toFixed(1) + ' KG';
+      stepper.hidden = true;
+      document.getElementById('weight-callout-sub').textContent = 'para llegar a los ' + target + ' kg';
+      document.getElementById('weight-bar-label').textContent = 'Progreso hacia ' + target + ' kg';
+      document.getElementById('weight-bar-pct').textContent = Math.round(wFrac * 100) + '%';
+      document.getElementById('weight-bar-fill').style.width = (wFrac * 100) + '%';
     }
 
-    var premiosPeso = WEIGHT_MILESTONES.map(function (m) {
-      var status = wState.reached.indexOf(m) > -1 ? 'reached' : (m === wState.next ? 'next' : 'locked');
-      return premioCard('peso', m, 'KG', status);
+    var premiosPeso = WEIGHT_MILESTONES.map(function (m, i) {
+      var p = wProgress[i];
+      var status = p.unlocked ? 'reached'
+        : i !== wActive ? 'locked'
+        : p.touched ? 'consolidando' : 'next';
+      return premioCard('peso', m, 'KG', status, p.streak);
     }).join('');
     document.getElementById('premios-peso').innerHTML = premiosPeso;
 
@@ -969,14 +1058,17 @@
   var weightValueSeen = null;
   var sessionCountSeen = null;
   var hospitalDateSeen = null;
+  var unlockedSeen = null;
   var HOSPITAL_DATE = '2026-09-08';
 
   function checkWeightMilestones(weights) {
     var count = weights.length;
     var current = count ? weights[weights.length - 1].kg : null;
     var hasHospitalEntry = weights.some(function (w) { return w.fecha === HOSPITAL_DATE; });
+    var unlockedNow = WEIGHT_MILESTONES.map(function (m) { return weightMilestoneProgress(weights, m).unlocked; });
     if (weightCountSeen === null) {
-      weightCountSeen = count; weightValueSeen = current; hospitalDateSeen = hasHospitalEntry;
+      weightCountSeen = count; weightValueSeen = current;
+      hospitalDateSeen = hasHospitalEntry; unlockedSeen = unlockedNow;
       return;
     }
     if (weightCountSeen < 10 && count >= 10) { celebrate('peso10'); }
@@ -986,9 +1078,13 @@
       if ((prev === null || prev > 59.5) && current <= 59.5) { celebrate('peso595'); }
     }
     if (!hospitalDateSeen && hasHospitalEntry) { celebrate('hospital0908'); }
+    for (var i = 0; i < WEIGHT_MILESTONES.length; i++) {
+      if (!unlockedSeen[i] && unlockedNow[i]) { celebrate(premioKey(WEIGHT_MILESTONES[i])); }
+    }
     weightCountSeen = count;
     weightValueSeen = current;
     hospitalDateSeen = hasHospitalEntry;
+    unlockedSeen = unlockedNow;
   }
 
   function checkSessionMilestones(sessions) {
