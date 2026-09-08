@@ -612,8 +612,12 @@
       body: 'Hoy es un día muy importante: vais a ir al hospital y todo va a salir muy bien.<br><br>Y a la salida, podréis desayunar o comer fuera, como a ti te gusta.<br><br>Descuida, esto no te aleja de tus premios 🙂'
     },
     premio59: {
-      kind: 'peso', icon: TROPHY, eyebrow: 'PREMIO DESBLOQUEADO', title: '¡Premio tuyo!',
-      body: 'Has confirmado los <b>59 kg</b> tres registros seguidos. Ya no es casualidad: el peso está consolidado y el <b>primer premio es tuyo</b>. Ve a reclamarlo 😉'
+      kind: 'peso', icon: TROPHY, eyebrow: 'PREMIO DESBLOQUEADO', title: '¡Enhorabuena!',
+      body: 'Has alcanzado tu primer premio.<br><br>Corre a decírselo a Denis y canjea el cupón <b>RACHELFIT</b> por tu primer obsequio.<br><br>Sigue así y pronto tendrás muchos más.'
+    },
+    consolidando2: {
+      kind: 'peso', icon: FLAME, eyebrow: 'CASI LO TIENES', title: '¡Ya casi!',
+      body: 'Ya estás muy cerca.<br><br>Sigue así y registra un día más de tu racha para conseguir tu objetivo.'
     },
     premio58_5: {
       kind: 'peso', icon: TROPHY, eyebrow: 'PREMIO DESBLOQUEADO', title: '¡Premio tuyo!',
@@ -1059,16 +1063,19 @@
   var sessionCountSeen = null;
   var hospitalDateSeen = null;
   var unlockedSeen = null;
+  var streakSeen = null;
   var HOSPITAL_DATE = '2026-09-08';
 
   function checkWeightMilestones(weights) {
     var count = weights.length;
     var current = count ? weights[weights.length - 1].kg : null;
     var hasHospitalEntry = weights.some(function (w) { return w.fecha === HOSPITAL_DATE; });
-    var unlockedNow = WEIGHT_MILESTONES.map(function (m) { return weightMilestoneProgress(weights, m).unlocked; });
+    var progressNow = WEIGHT_MILESTONES.map(function (m) { return weightMilestoneProgress(weights, m); });
+    var unlockedNow = progressNow.map(function (p) { return p.unlocked; });
+    var streaksNow = progressNow.map(function (p) { return p.streak; });
     if (weightCountSeen === null) {
       weightCountSeen = count; weightValueSeen = current;
-      hospitalDateSeen = hasHospitalEntry; unlockedSeen = unlockedNow;
+      hospitalDateSeen = hasHospitalEntry; unlockedSeen = unlockedNow; streakSeen = streaksNow;
       return;
     }
     if (weightCountSeen < 10 && count >= 10) { celebrate('peso10'); }
@@ -1079,12 +1086,17 @@
     }
     if (!hospitalDateSeen && hasHospitalEntry) { celebrate('hospital0908'); }
     for (var i = 0; i < WEIGHT_MILESTONES.length; i++) {
-      if (!unlockedSeen[i] && unlockedNow[i]) { celebrate(premioKey(WEIGHT_MILESTONES[i])); }
+      if (!unlockedSeen[i] && unlockedNow[i]) {
+        celebrate(premioKey(WEIGHT_MILESTONES[i]));
+      } else if (streakSeen[i] < 2 && streaksNow[i] >= 2 && !unlockedNow[i]) {
+        celebrate('consolidando2');
+      }
     }
     weightCountSeen = count;
     weightValueSeen = current;
     hospitalDateSeen = hasHospitalEntry;
     unlockedSeen = unlockedNow;
+    streakSeen = streaksNow;
   }
 
   function checkSessionMilestones(sessions) {
