@@ -171,16 +171,18 @@
   .card.peso .bar-fill { background: var(--lime); }
   .card.pierna .bar-fill { background: var(--orange); }
 
-  .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
-  .cta-btn {
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    border-radius: 10px; border: 1.5px solid; padding: 18px 10px;
-    background: var(--surface); font-size: 13.5px; letter-spacing: .02em;
+  .card-add-btn {
+    display: flex; align-items: center; gap: 6px;
+    margin-left: auto; flex-shrink: 0;
+    border-radius: 999px; border: 1.5px solid;
+    padding: 8px 14px; background: var(--surface-2);
+    font-size: 12.5px; font-weight: 800; letter-spacing: .02em;
+    white-space: nowrap;
   }
-  .cta-btn svg { width: 26px; height: 26px; }
-  .cta-btn.peso { border-color: var(--lime); color: var(--lime); }
-  .cta-btn.pierna { border-color: var(--orange); color: var(--orange); }
-  .cta-btn:active { transform: translateY(1px); }
+  .card-add-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .card-add-btn.peso { border-color: var(--lime); color: var(--lime); }
+  .card-add-btn.pierna { border-color: var(--orange); color: var(--orange); }
+  .card-add-btn:active { transform: translateY(1px); }
 
   dialog.modal {
     border: 1px solid var(--border); border-radius: 12px; padding: 0;
@@ -384,6 +386,10 @@
           <span class="an">Peso</span>
           <span class="meta">Meta final · 58 kg</span>
         </div>
+        <button type="button" class="card-add-btn peso an" id="open-weight" aria-label="Registrar peso">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Registrar
+        </button>
       </div>
       <div class="value-row">
         <span class="an" id="weight-current">—</span>
@@ -417,6 +423,10 @@
           <span class="an">Pierna</span>
           <span class="meta">Meta final · 20 sesiones</span>
         </div>
+        <button type="button" class="card-add-btn pierna an" id="open-session" aria-label="Registrar sesión">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Registrar
+        </button>
       </div>
       <div class="value-row">
         <span class="an" id="sessions-current">—</span>
@@ -436,17 +446,6 @@
         <div class="bar-track"><div class="bar-fill" id="sessions-bar-fill" style="width:0%"></div></div>
       </div>
     </div>
-  </div>
-
-  <div class="quick-actions">
-    <button type="button" class="cta-btn peso an" id="open-weight">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-      Registrar peso
-    </button>
-    <button type="button" class="cta-btn pierna an" id="open-session">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-      Registrar sesión
-    </button>
   </div>
 
   <dialog class="modal" id="weight-dialog">
